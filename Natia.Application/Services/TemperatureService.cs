@@ -18,7 +18,7 @@ namespace Natia.Application.Services
         {
             try
             {
-                var response = await client.GetAsync($"{_config.GetSection("serverUrl").Value ?? throw new ArgumentNullException("Appsettings have probblem")}/monitoring");
+                var response = await client.GetAsync($"http://192.168.100.104:8080/monitoring");
                 response.EnsureSuccessStatusCode();
                 var responseData = await response.Content.ReadAsStringAsync();
                 var res = responseData.Split(new string[] { "<div id=\"temperature\" class=\"temperature\">", "°C</div>" }, StringSplitOptions.None)[1];
