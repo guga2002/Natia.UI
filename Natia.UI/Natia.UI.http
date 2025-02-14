@@ -1,6 +1,0 @@
-@Natia.UI_HostAddress = http://localhost:5043
-
-GET {{Natia.UI_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
