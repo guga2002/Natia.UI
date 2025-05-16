@@ -791,28 +791,34 @@ namespace NatiaGuard.BrainStorm.Main
         #endregion
 
         #region Encoder and Decode
+        private const int MaxNameLength = 20;
         private const int Offset = 3;
+
         public static string EncodeName(string name)
         {
-            if (string.IsNullOrEmpty(name)) return name;
+            if (string.IsNullOrWhiteSpace(name))
+                return string.Empty;
 
-            var length = name.Length;
+            var letters = name
+                .Where(char.IsLetter)
+                .Take(MaxNameLength)
+                .Select(c => ShiftChar(c, Offset));
 
-            if(length>=20)
-            {
-                length = 20;
-            }
-
-            StringBuilder decodedName = new StringBuilder();
-            for (int i = 0; i < length; i++)
-            {
-                if (char.IsLetter(name[i]))
-                {
-                    decodedName.Append(name[i]);
-                }
-            }
-            return decodedName.ToString();
+            return new string(letters.ToArray());
         }
+
+
+        private static char ShiftChar(char c, int offset)
+        {
+            if (char.IsUpper(c) && c <= 'Z')
+                return (char)((((c - 'A') + offset + 26) % 26) + 'A');
+
+            if (char.IsLower(c) && c <= 'z')
+                return (char)((((c - 'a') + offset + 26) % 26) + 'a');
+
+            return c;
+        }
+
 
         public static string DecodeName(string encodedName)
         {

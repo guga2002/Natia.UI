@@ -75,7 +75,7 @@ namespace NatiaGuard.BrainStorm.Main
             _azure = azure ?? throw new ArgumentNullException(nameof(azure));
             _temperature = temperature ?? throw new ArgumentNullException(nameof(temperature));
             _httpClient = httpClient;
-            _natiaClient = new Client("http://192.168.1.102:5218/", new HttpClient());
+            _natiaClient = new Client("https://192.168.1.102:2024/", new HttpClient());
             _smtpClientRepository = _client;
             this.neuralRepository = neuralRepository;
             _Recomendation = recomendation;
@@ -124,8 +124,8 @@ namespace NatiaGuard.BrainStorm.Main
             //CheckAndPlayAsync("გამარჯობა, მე ვარ ნათია");
             var listsongs = new List<string>()
             {
-                @"\\192.168.1.102\ShearedFolders\musics\Song1.wav",
-                @"\\192.168.1.102\ShearedFolders\musics\song2.wav"
+                @"\\192.168.1.102\ShearedFolders\musics\DanceDance.wav",
+                @"\\192.168.1.102\ShearedFolders\musics\sleep.wav"
             };
             Random rand = new Random();
         mods:
@@ -167,7 +167,7 @@ namespace NatiaGuard.BrainStorm.Main
                             defaultDevice.AudioEndpointVolume.Mute = false;
                             defaultDevice.AudioEndpointVolume.MasterVolumeLevelScalar = 0.80f;
                             // makeSound.SpeakNow("ხმა იყო გათიშული. ნათია გთხოვთ, აღარ გათიშოთ ხმა.",1);
-                            using (var audioFile = new AudioFileReader($@"C:\Users\MONITORING PC\source\repos\SPEAKER.NATIA.JANDAG\Sounds\\mute.mp3"))
+                            using (var audioFile = new AudioFileReader($@"\\192.168.1.102\ShearedFolders\musics\mute.mp3"))
                             using (var outputDevice = new WaveOutEvent())
                             {
                                 outputDevice.Init(audioFile);
@@ -459,7 +459,7 @@ namespace NatiaGuard.BrainStorm.Main
                                     SuggestedSolution = "გადაამოწმე სადგური",
                                 });
 
-                                using (var audioFile = new AudioFileReader($@"\\192.168.1.102\ShearedFolders\musics\war-alarm-fx_132bpm.wav"))
+                                using (var audioFile = new AudioFileReader($@"\\192.168.1.102\ShearedFolders\musics\Alert.mp3"))
                                 using (var outputDevice = new WaveOutEvent())
                                 {
                                     outputDevice.Init(audioFile);
@@ -635,7 +635,7 @@ namespace NatiaGuard.BrainStorm.Main
 
                         await CheckAndPlayAsync(yvela);
 
-                        using (var audioFile = new AudioFileReader($@"\\192.168.1.102\ShearedFolders\musics\war-alarm-fx_132bpm.wav"))
+                        using (var audioFile = new AudioFileReader($@"\\192.168.1.102\ShearedFolders\musics\Alert.mp3"))
                         using (var outputDevice = new WaveOutEvent())
                         {
                             outputDevice.Init(audioFile);
