@@ -47,7 +47,7 @@ namespace NatiCore
                 ServerCertificateCustomValidationCallback = (message, cert, chain, sslPolicyErrors) => true
             };
             var client = new HttpClient(handler);
-            var requestUrl = "https://192.168.0.28:2024/api/CheckHealth/CheckSystemHealth";
+            var requestUrl = "https://192.168.1.102:2024/api/CheckHealth/CheckSystemHealth";
 
             var res = await client.GetAsync(requestUrl);
 
@@ -70,7 +70,7 @@ namespace NatiCore
                 ServerCertificateCustomValidationCallback = (message, cert, chain, sslPolicyErrors) => true
             };
             var client = new HttpClient(handler);
-            var requestUrl = "https://192.168.0.28:2024/api/CheckAnommaliesOverSystem/CheckForAnomalies";
+            var requestUrl = "https://192.168.1.102:2024/api/CheckAnommaliesOverSystem/CheckForAnomalies";
 
             var res = await client.GetAsync(requestUrl);
 
@@ -96,7 +96,7 @@ namespace NatiCore
                     ServerCertificateCustomValidationCallback = (message, cert, chain, sslPolicyErrors) => true
                 };
                 var client = new HttpClient(handler);
-                var requestUrl = "https://192.168.0.28:2024/api/NatiaCore/info";
+                var requestUrl = "https://192.168.1.102:2024/api/NatiaCore/info";
 
                 var res = await client.GetAsync(requestUrl);
 
@@ -130,7 +130,7 @@ namespace NatiCore
                     ServerCertificateCustomValidationCallback = (message, cert, chain, sslPolicyErrors) => true
                 };
                 var client = new HttpClient(handler);
-                var requestUrl = "https://192.168.0.28:2024/api/NatiaCore/GetAnniversaryDates";
+                var requestUrl = "https://192.168.1.102:2024/api/NatiaCore/GetAnniversaryDates";
 
                 var res = await client.GetAsync(requestUrl);
 
@@ -221,7 +221,7 @@ namespace NatiCore
                     ServerCertificateCustomValidationCallback = (message, cert, chain, sslPolicyErrors) => true
                 };
                 var client = new HttpClient(handler);
-                var requestUrl = "https://192.168.0.28:2024/api/Descrambler/CardsThatNeedToBeActivated";
+                var requestUrl = "https://192.168.1.102:2024/api/Descrambler/CardsThatNeedToBeActivated";
 
                 var res = await client.GetAsync(requestUrl);
 

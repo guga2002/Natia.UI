@@ -28,7 +28,7 @@ namespace Natia.Core.Context
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Server=192.168.0.28;Database=JandagBase;User Id=Taba;Password=Guga13gagno;TrustServerCertificate=True;");
+            optionsBuilder.UseSqlServer("Server=192.168.1.102;Database=JandagBase;User Id=Guga13guga;Password=Guga13gagno!;TrustServerCertificate=True;");
         }
     }
 }

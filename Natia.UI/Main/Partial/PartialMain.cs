@@ -168,7 +168,7 @@ namespace NatiaGuard.BrainStorm.Main
         {
             try
             {
-                using (var audioFile = new AudioFileReader($@"\\192.168.0.28\ShearedFolders\musics\daweva.mp3"))
+                using (var audioFile = new AudioFileReader($@"\\192.168.1.102\ShearedFolders\musics\daweva.mp3"))
                 using (var outputDevice = new WaveOutEvent())
                 {
                     outputDevice.Init(audioFile);
@@ -267,7 +267,7 @@ namespace NatiaGuard.BrainStorm.Main
                 await neuralRepository.AddNewRecord(neurall);
                 await Console.Out.WriteLineAsync("daemataa Neuralli");
             }
-            string sharedFolderPath = @"\\192.168.0.28\ShearedFolders\Sounds";
+            string sharedFolderPath = @"\\192.168.1.102\ShearedFolders\Sounds";
 
             if (!Directory.Exists(sharedFolderPath))
             {
@@ -345,7 +345,7 @@ namespace NatiaGuard.BrainStorm.Main
         {
            await _natiaClient.MakeNatiaSpeake(text.ToString());
 
-            string sharedFolderPath = @"\\192.168.0.28\ShearedFolders\Sounds";
+            string sharedFolderPath = @"\\192.168.1.102\ShearedFolders\Sounds";
 
             if (!Directory.Exists(sharedFolderPath))
             {
@@ -393,7 +393,7 @@ namespace NatiaGuard.BrainStorm.Main
 
             defaultDevice.AudioEndpointVolume.MasterVolumeLevelScalar = 0.4f;
 
-            using (var audioFile = new AudioFileReader($@"\\192.168.0.28\ShearedFolders\musics\leqsi{(random.Next()%3)+1}.mp3"))
+            using (var audioFile = new AudioFileReader($@"\\192.168.1.102\ShearedFolders\musics\leqsi{(random.Next()%3)+1}.mp3"))
             using (var outputDevice = new WaveOutEvent())
             {
                 outputDevice.Init(audioFile);
@@ -409,7 +409,7 @@ namespace NatiaGuard.BrainStorm.Main
 
             defaultDevice.AudioEndpointVolume.MasterVolumeLevelScalar = 0.8f;
 
-            using (var audioFile = new AudioFileReader(@$"\\192.168.0.28\ShearedFolders\musics\Birthday{(random.Next() % 3) + 1}.mp3"))
+            using (var audioFile = new AudioFileReader(@$"\\192.168.1.102\ShearedFolders\musics\Birthday{(random.Next() % 3) + 1}.mp3"))
             using (var outputDevice = new WaveOutEvent())
             {
                 outputDevice.Init(audioFile);

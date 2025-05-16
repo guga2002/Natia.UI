@@ -124,8 +124,8 @@ namespace NatiaGuard.BrainStorm.Main
             //CheckAndPlayAsync("გამარჯობა, მე ვარ ნათია");
             var listsongs = new List<string>()
             {
-                @"\\192.168.0.28\ShearedFolders\musics\Song1.wav",
-                @"\\192.168.0.28\ShearedFolders\musics\song2.wav"
+                @"\\192.168.1.102\ShearedFolders\musics\Song1.wav",
+                @"\\192.168.1.102\ShearedFolders\musics\song2.wav"
             };
             Random rand = new Random();
         mods:
@@ -185,7 +185,7 @@ namespace NatiaGuard.BrainStorm.Main
                             Thread th1 = new Thread(new ThreadStart(
                                 () =>
                                 {
-                                    using (var audioFile = new AudioFileReader(@"\\192.168.0.28\ShearedFolders\musics\angry.mp3"))
+                                    using (var audioFile = new AudioFileReader(@"\\192.168.1.102\ShearedFolders\musics\angry.mp3"))
                                     using (var outputDevice = new WaveOutEvent())
                                     {
                                         outputDevice.Init(audioFile);
@@ -207,7 +207,7 @@ namespace NatiaGuard.BrainStorm.Main
                             if (index > 50)
                             {
 
-                                using (var audioFile = new AudioFileReader($@"\\192.168.0.28\ShearedFolders\musics\IntroDgisRejimi.mp3"))
+                                using (var audioFile = new AudioFileReader($@"\\192.168.1.102\ShearedFolders\musics\IntroDgisRejimi.mp3"))
                                 using (var outputDevice = new WaveOutEvent())
                                 {
                                     outputDevice.Init(audioFile);
@@ -222,7 +222,7 @@ namespace NatiaGuard.BrainStorm.Main
                             }
                             else if (index > 30)
                             {
-                                using (var audioFile = new AudioFileReader($@"\\192.168.0.28\ShearedFolders\musics\DgisRejim.mp3"))
+                                using (var audioFile = new AudioFileReader($@"\\192.168.1.102\ShearedFolders\musics\DgisRejim.mp3"))
                                 using (var outputDevice = new WaveOutEvent())
                                 {
                                     outputDevice.Init(audioFile);
@@ -259,7 +259,7 @@ namespace NatiaGuard.BrainStorm.Main
                             // defaultDevice.AudioEndpointVolume.MasterVolumeLevelScalar = 0.98f;
                             if (count >= 3)
                             {
-                                using (var audioFile = new AudioFileReader($@"\\192.168.0.28\ShearedFolders\musics\sayveduri.mp3"))
+                                using (var audioFile = new AudioFileReader($@"\\192.168.1.102\ShearedFolders\musics\sayveduri.mp3"))
                                 using (var outputDevice = new WaveOutEvent())
                                 {
                                     outputDevice.Init(audioFile);
@@ -288,7 +288,7 @@ namespace NatiaGuard.BrainStorm.Main
                         if (countsayelse == 0 || level >= 50 || level <= 20)
                         {
                             counttotalchange = 0;
-                            using (var audioFile = new AudioFileReader($@"\\192.168.0.28\ShearedFolders\musics\game.mp3"))
+                            using (var audioFile = new AudioFileReader($@"\\192.168.1.102\ShearedFolders\musics\game.mp3"))
                             using (var outputDevice = new WaveOutEvent())
                             {
                                 outputDevice.Init(audioFile);
@@ -374,7 +374,7 @@ namespace NatiaGuard.BrainStorm.Main
                             else
                             {
 
-                                using (var audioFile = new AudioFileReader($@"\\192.168.0.28\ShearedFolders\musics\procesori.mp3"))
+                                using (var audioFile = new AudioFileReader($@"\\192.168.1.102\ShearedFolders\musics\procesori.mp3"))
                                 using (var outputDevice = new WaveOutEvent())
                                 {
                                     outputDevice.Init(audioFile);
@@ -390,7 +390,7 @@ namespace NatiaGuard.BrainStorm.Main
                         }
                         if (performance.Ram >= 96)
                         {
-                            using (var audioFile = new AudioFileReader($@"\\192.168.0.28\ShearedFolders\musics\Operatiuli.mp3"))
+                            using (var audioFile = new AudioFileReader($@"\\192.168.1.102\ShearedFolders\musics\Operatiuli.mp3"))
                             using (var outputDevice = new WaveOutEvent())
                             {
                                 outputDevice.Init(audioFile);
@@ -459,7 +459,7 @@ namespace NatiaGuard.BrainStorm.Main
                                     SuggestedSolution = "გადაამოწმე სადგური",
                                 });
 
-                                using (var audioFile = new AudioFileReader($@"\\192.168.0.28\ShearedFolders\musics\war-alarm-fx_132bpm.wav"))
+                                using (var audioFile = new AudioFileReader($@"\\192.168.1.102\ShearedFolders\musics\war-alarm-fx_132bpm.wav"))
                                 using (var outputDevice = new WaveOutEvent())
                                 {
                                     outputDevice.Init(audioFile);
@@ -587,7 +587,7 @@ namespace NatiaGuard.BrainStorm.Main
                     {
                         await CheckAndPlayAsync(new CheckAndPlayModel
                         {
-                            WhatNatiaSaid = "სერვერს ვეღარ ვუკავშირდები იქნებ გადაამოწმო, 192.168.0.28. სერვერი ფიზიკურად არის სადგურში, სერვერების რეკში სულლ ბოლო სერვერი, ნახე ხო არ გამოირთო",
+                            WhatNatiaSaid = "სერვერს ვეღარ ვუკავშირდები იქნებ გადაამოწმო, 192.168.1.102. სერვერი ფიზიკურად არის სადგურში, სერვერების რეკში სულლ ბოლო სერვერი, ნახე ხო არ გამოირთო",
                             IsCritical = true,
                             IsError = true,
                             Priority = Priority.მარტივი,
@@ -635,7 +635,7 @@ namespace NatiaGuard.BrainStorm.Main
 
                         await CheckAndPlayAsync(yvela);
 
-                        using (var audioFile = new AudioFileReader($@"\\192.168.0.28\ShearedFolders\musics\war-alarm-fx_132bpm.wav"))
+                        using (var audioFile = new AudioFileReader($@"\\192.168.1.102\ShearedFolders\musics\war-alarm-fx_132bpm.wav"))
                         using (var outputDevice = new WaveOutEvent())
                         {
                             outputDevice.Init(audioFile);
@@ -666,7 +666,7 @@ namespace NatiaGuard.BrainStorm.Main
                         {
                             if (rnd.Next(34, 4566) % 2 == 1)
                             {
-                                using (var audioFile = new AudioFileReader($@"\\192.168.0.28\ShearedFolders\musics\Shetyobineba.mp3"))
+                                using (var audioFile = new AudioFileReader($@"\\192.168.1.102\ShearedFolders\musics\Shetyobineba.mp3"))
                                 using (var outputDevice = new WaveOutEvent())
                                 {
                                     outputDevice.Init(audioFile);
@@ -680,7 +680,7 @@ namespace NatiaGuard.BrainStorm.Main
                             }
                             else
                             {
-                                using (var audioFile = new AudioFileReader($@"\\192.168.0.28\ShearedFolders\musics\axali.mp3"))
+                                using (var audioFile = new AudioFileReader($@"\\192.168.1.102\ShearedFolders\musics\axali.mp3"))
                                 using (var outputDevice = new WaveOutEvent())
                                 {
                                     outputDevice.Init(audioFile);
@@ -715,7 +715,7 @@ namespace NatiaGuard.BrainStorm.Main
                                         await PlayAudioAndSave(await _makeSound.SpeakNow("ავიმაღლოთ განწყობა.", 0), "ganwyoba", "ავიმაღლოთ განწყობა");
 
                                         defaultDevice.AudioEndpointVolume.MasterVolumeLevelScalar = 0.9f;
-                                        using (var audioFile = new AudioFileReader($@"\\192.168.0.28\ShearedFolders\musics\{random.Next(100, 1456) % 30 + 1}.mp3"))
+                                        using (var audioFile = new AudioFileReader($@"\\192.168.1.102\ShearedFolders\musics\{random.Next(100, 1456) % 30 + 1}.mp3"))
                                         using (var outputDevice = new WaveOutEvent())
                                         {
                                             outputDevice.Init(audioFile);
@@ -743,7 +743,7 @@ namespace NatiaGuard.BrainStorm.Main
 
                                         Random random = new Random();
                                         defaultDevice.AudioEndpointVolume.MasterVolumeLevelScalar = 0.9f;
-                                        using (var audioFile = new AudioFileReader($@"\\192.168.0.28\ShearedFolders\musics\{random.Next(100, 1456) % 30 + 1}.mp3"))
+                                        using (var audioFile = new AudioFileReader($@"\\192.168.1.102\ShearedFolders\musics\{random.Next(100, 1456) % 30 + 1}.mp3"))
                                         using (var outputDevice = new WaveOutEvent())
                                         {
                                             outputDevice.Init(audioFile);
@@ -772,7 +772,7 @@ namespace NatiaGuard.BrainStorm.Main
 
                                         Random random = new Random();
                                         defaultDevice.AudioEndpointVolume.MasterVolumeLevelScalar = 0.95f;
-                                        using (var audioFile = new AudioFileReader($@"\\192.168.0.28\ShearedFolders\musics\{random.Next(100, 1496) % 30 + 1}.mp3"))
+                                        using (var audioFile = new AudioFileReader($@"\\192.168.1.102\ShearedFolders\musics\{random.Next(100, 1496) % 30 + 1}.mp3"))
                                         using (var outputDevice = new WaveOutEvent())
                                         {
                                             outputDevice.Init(audioFile);
@@ -800,7 +800,7 @@ namespace NatiaGuard.BrainStorm.Main
 
                                         Random random = new Random();
                                         defaultDevice.AudioEndpointVolume.MasterVolumeLevelScalar = 0.5f;
-                                        using (var audioFile = new AudioFileReader($@"\\192.168.0.28\ShearedFolders\musics\{random.Next(100, 1456) % 30 + 1}.mp3"))
+                                        using (var audioFile = new AudioFileReader($@"\\192.168.1.102\ShearedFolders\musics\{random.Next(100, 1456) % 30 + 1}.mp3"))
                                         using (var outputDevice = new WaveOutEvent())
                                         {
 
@@ -1226,7 +1226,7 @@ namespace NatiaGuard.BrainStorm.Main
                 defaultDevice.AudioEndpointVolume.Mute = false;
                 defaultDevice.AudioEndpointVolume.MasterVolumeLevelScalar = 1f;
                 // makeSound.SpeakNow("ხმა იყო გათიშული.გთხოვთ, აღარ გამითიშოთ ხმა.",-2);
-                using (var audioFile = new AudioFileReader($@"\\192.168.0.28\ShearedFolders\musics\mute.mp3"))
+                using (var audioFile = new AudioFileReader($@"\\192.168.1.102\ShearedFolders\musics\mute.mp3"))
                 using (var outputDevice = new WaveOutEvent())
                 {
                     outputDevice.Init(audioFile);
@@ -1238,7 +1238,7 @@ namespace NatiaGuard.BrainStorm.Main
                     }
                 }
 
-                using (var audioFile = new AudioFileReader(@"\\192.168.0.28\ShearedFolders\musics\angry.mp3"))
+                using (var audioFile = new AudioFileReader(@"\\192.168.1.102\ShearedFolders\musics\angry.mp3"))
                 using (var outputDevice = new WaveOutEvent())
                 {
                     outputDevice.Init(audioFile);
@@ -1253,7 +1253,7 @@ namespace NatiaGuard.BrainStorm.Main
 
                 Random random = new Random();
                
-                using (var audioFile = new AudioFileReader($@"\\192.168.0.28\ShearedFolders\musics\{random.Next(0,31)}.mp3"))
+                using (var audioFile = new AudioFileReader($@"\\192.168.1.102\ShearedFolders\musics\{random.Next(0,31)}.mp3"))
                 using (var outputDevice = new WaveOutEvent())
                 {
                     outputDevice.Init(audioFile);
@@ -1356,7 +1356,7 @@ namespace NatiaGuard.BrainStorm.Main
 
                     await CheckAndPlayAsync(res,"JeocellOptic");
 
-                    using (var audioFile1 = new AudioFileReader(@"\\192.168.0.28\ShearedFolders\musics\Alert.mp3"))
+                    using (var audioFile1 = new AudioFileReader(@"\\192.168.1.102\ShearedFolders\musics\Alert.mp3"))
                     using (var outputDevice1 = new WaveOutEvent())
                     {
                         outputDevice1.Init(audioFile1);
@@ -1394,7 +1394,7 @@ namespace NatiaGuard.BrainStorm.Main
 
                     await CheckAndPlayAsync(res,"MainOptic");
 
-                    using (var audioFile1 = new AudioFileReader(@"\\192.168.0.28\ShearedFolders\musics\Alert.mp3"))
+                    using (var audioFile1 = new AudioFileReader(@"\\192.168.1.102\ShearedFolders\musics\Alert.mp3"))
                     using (var outputDevice1 = new WaveOutEvent())
                     {
                         outputDevice1.Init(audioFile1);

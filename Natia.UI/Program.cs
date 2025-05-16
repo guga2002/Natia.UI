@@ -21,7 +21,7 @@ builder.Services.AddScoped<IImapServices, ImapService>();
 builder.Services.AddDbContext<SpeakerDbContext>(io =>
 {
 
-    io.UseSqlServer(builder.Configuration.GetConnectionString("Server=192.168.0.28;Database=JandagBase;User Id=Taba;Password=Guga13gagno;Encrypt=True;TrustServerCertificate=True;"));
+    io.UseSqlServer(builder.Configuration.GetConnectionString("Server=192.168.1.102;Database=JandagBase;User Id=Guga13guga;Password=Guga13gagno!;Encrypt=True;TrustServerCertificate=True;"));
 });
 builder.Services.AddScoped<Main>();
 builder.Services.AddHostedService<Worker>();
