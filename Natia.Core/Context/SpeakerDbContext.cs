@@ -30,5 +30,6 @@ namespace Natia.Core.Context
         {
             optionsBuilder.UseSqlServer("Server=192.168.1.102;Database=JandagBase;User Id=Guga13guga;Password=Guga13gagno!;TrustServerCertificate=True;");
         }
+
     }
 }
