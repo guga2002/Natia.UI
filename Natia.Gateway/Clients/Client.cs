@@ -272,7 +272,7 @@ public partial class Client
     {
         try
         {
-            var requestUrl = "http://192.168.1.102:3999/api/controll/heartbeat/true";
+            var requestUrl = "https://192.168.1.102:3999/api/controll/heartbeat/true";
 
             var res = await _httpClient.GetAsync(requestUrl);
 
