@@ -10,6 +10,7 @@ using Natia.Core.Entities;
 using System.Security.Cryptography;
 using Natia.Neurall.Model;
 using Natia.UI.Models;
+using NAudio.Lame;
 
 namespace NatiaGuard.BrainStorm.Main;
 
@@ -152,42 +153,42 @@ public partial class Main
      
         try
         {
-            //var res = await GetCountOfweather();
-            //await Console.Out.WriteLineAsync(res.Item1.ToString());
-            //await Console.Out.WriteLineAsync( res.Item2.ToString());
-            //var shedeg = "კარგი ამინდია";
-            //if (res.Item1 >= 30)
-            //{
-            //    shedeg = $"გარეთ  ძალიან ცხელა, ჰაერის ტემპერატურაა {(int)res.Item1} ცელსიუსი. ქარის სიჩქარეა {(int)res.Item2} კილომეტრი საათში";
-            //}
-            //else if (res.Item1 >= 20)
-            //{
-            //    shedeg = $"გარეთ  ცხელა, ჰაერის ტემპერატურაა {(int)res.Item1} ცელსიუსი. ქარის სიჩქარეა {(int)res.Item2} კილომეტრი საათში";
-            //}
-            //else if (res.Item1 >= 13)
-            //{
-            //    shedeg = $"გარეთ  გრილა, ჰაერის ტემპერატურაა {(int)res.Item1} ცელსიუსი. ქარის სიჩქარეა {(int)res.Item2} კილომეტრი საათში";
-            //}
-            //else if (res.Item1 < 13)
-            //{
-            //    var choice=RandomIndex(int.MaxValue);
-            //    if (choice % 3 == 0)
-            //    {
-            //        var tqvi = (int)res.Item1 < 0 ? $"მინუს {(int)res.Item1}" : $"{(int)res.Item1}";
-            //        shedeg = $"გარეთ ძალიან ცივა, ჰაერის ტემპერატურაა {tqvi} ცელსიუსი. ქარის სიჩქარეა {(int)res.Item2} კილომეტრი საათში";
-            //    }
-            //    else if(choice % 2 == 0)
-            //    {
-            //        var tqvi = (int)res.Item1 < 0 ? $"მინუს {(int)res.Item1}" : $"{(int)res.Item1}";
-            //        shedeg = $"ჰაერის ტემპერატურაა {tqvi} ცელსიუსი. ქარის სიჩქარეა {(int)res.Item2} კილომეტრი საათში";
-            //    }
-            //    else
-            //    {
-            //        var tqvi = (int)res.Item1 < 0 ? $"მინუს {(int)res.Item1}" : $"{(int)res.Item1}";
-            //        shedeg = $"გარეთ საკმაოდ ცივა ჰაერის ტემპერატურაა {tqvi} ცელსიუსი. ქარის სიჩქარეა {(int)res.Item2} კილომეტრი საათში";
-            //    }
-            //}
-            //return shedeg;
+            var res = await GetCountOfweather();
+            await Console.Out.WriteLineAsync(res.Item1.ToString());
+            await Console.Out.WriteLineAsync(res.Item2.ToString());
+            var shedeg = "კარგი ამინდია";
+            if (res.Item1 >= 30)
+            {
+                shedeg = $"გარეთ  ძალიან ცხელა, ჰაერის ტემპერატურაა {(int)res.Item1} ცელსიუსი. ქარის სიჩქარეა {(int)res.Item2} კილომეტრი საათში";
+            }
+            else if (res.Item1 >= 20)
+            {
+                shedeg = $"გარეთ  ცხელა, ჰაერის ტემპერატურაა {(int)res.Item1} ცელსიუსი. ქარის სიჩქარეა {(int)res.Item2} კილომეტრი საათში";
+            }
+            else if (res.Item1 >= 13)
+            {
+                shedeg = $"გარეთ  გრილა, ჰაერის ტემპერატურაა {(int)res.Item1} ცელსიუსი. ქარის სიჩქარეა {(int)res.Item2} კილომეტრი საათში";
+            }
+            else if (res.Item1 < 13)
+            {
+                var choice = RandomIndex(int.MaxValue);
+                if (choice % 3 == 0)
+                {
+                    var tqvi = (int)res.Item1 < 0 ? $"მინუს {(int)res.Item1}" : $"{(int)res.Item1}";
+                    shedeg = $"გარეთ ძალიან ცივა, ჰაერის ტემპერატურაა {tqvi} ცელსიუსი. ქარის სიჩქარეა {(int)res.Item2} კილომეტრი საათში";
+                }
+                else if (choice % 2 == 0)
+                {
+                    var tqvi = (int)res.Item1 < 0 ? $"მინუს {(int)res.Item1}" : $"{(int)res.Item1}";
+                    shedeg = $"ჰაერის ტემპერატურაა {tqvi} ცელსიუსი. ქარის სიჩქარეა {(int)res.Item2} კილომეტრი საათში";
+                }
+                else
+                {
+                    var tqvi = (int)res.Item1 < 0 ? $"მინუს {(int)res.Item1}" : $"{(int)res.Item1}";
+                    shedeg = $"გარეთ საკმაოდ ცივა ჰაერის ტემპერატურაა {tqvi} ცელსიუსი. ქარის სიჩქარეა {(int)res.Item2} კილომეტრი საათში";
+                }
+            }
+            return shedeg;
             return string.Empty;
         }
         catch (Exception ex)
@@ -228,25 +229,40 @@ public partial class Main
     {
         try
         {
-            byte[] audioBytes = await File.ReadAllBytesAsync(filePath);
-            string base64 = Convert.ToBase64String(audioBytes);
-
-            var json = System.Text.Json.JsonSerializer.Serialize(base64);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-            var handler = new HttpClientHandler
+            if (!File.Exists(filePath))
             {
-                ServerCertificateCustomValidationCallback = (message, cert, chain, sslPolicyErrors) => true
-            };
-            var client = new HttpClient(handler);
+                Console.WriteLine($"File not found: {filePath}");
+                return;
+            }
 
-            var response = await client.PostAsync("https://192.168.1.102:3999/api/audiostreamer/push", content);
+            string extension = Path.GetExtension(filePath).ToLower();
+            string fileToPlay = filePath;
+
+            if (extension == ".wav")
+            {
+                fileToPlay = Path.ChangeExtension(filePath, ".mp3");
+                ConvertWavToMp3(filePath, fileToPlay);
+            }
+
+            Console.WriteLine($"🎵 Playing: {fileToPlay}");
+
+            using var audioFile = new AudioFileReader(fileToPlay);
+            using var outputDevice = new WaveOutEvent();
+            outputDevice.Init(audioFile);
+            outputDevice.Play();
+
+            while (outputDevice.PlaybackState == PlaybackState.Playing)
+            {
+                await Task.Delay(500);
+            }
+
+            Console.WriteLine("✅ Playback finished.");
         }
         catch (Exception ex)
         {
             var res = _smtpClientRepository.BuildHtmlMessage(ex.Message, ex?.StackTrace ?? "");
             await _smtpClientRepository.SendMessage(res);
-            Console.WriteLine($"An error occurred during audio playback: {ex?.Message}");
+            Console.WriteLine($"❌ Playback error: {ex?.Message}");
         }
     }
     #endregion
@@ -469,6 +485,13 @@ public partial class Main
             Console.WriteLine($"❌ Hashing failed: {ex.Message}");
             return $"hashfail_{Guid.NewGuid():N}";
         }
+    }
+
+    private void ConvertWavToMp3(string wavPath, string mp3Path)
+    {
+        using var reader = new AudioFileReader(wavPath);
+        using var writer = new LameMP3FileWriter(mp3Path, reader.WaveFormat, LAMEPreset.VBR_90);
+        reader.CopyTo(writer);
     }
     #endregion
 
