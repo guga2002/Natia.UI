@@ -527,7 +527,7 @@ $"პროცესორზე მაღალი დატვირთვა�
                 try
                 {
                     var data = await _natiaClient.GetTextToSentInMail();
-                    if(!string.IsNullOrEmpty(data)||data.Length<10)
+                    if(!string.IsNullOrEmpty(data)||data.Length>10)
                     {
                         foreach (var item in _mailsTOSent.ToList())
                         {
