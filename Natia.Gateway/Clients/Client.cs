@@ -235,6 +235,39 @@ public partial class Client
         }
     }
 
+    public async Task<string> GetTextToSentInMail(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var handler = new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = (message, cert, chain, sslPolicyErrors) => true
+            };
+            var client = new HttpClient(handler);
+            var requestUrl = "https://192.168.1.102:2024/api/RegionChecker/GetRegionData";
+
+            var res = await client.GetAsync(requestUrl);
+
+            if (res.IsSuccessStatusCode)
+            {
+                var resultString = await res.Content.ReadAsStringAsync();
+
+                var result = JsonConvert.DeserializeObject<string>(resultString);
+                return result ?? string.Empty;
+            }
+            else
+            {
+                return string.Empty;
+            }
+        }
+        catch (Exception exp)
+        {
+            await Console.Out.WriteLineAsync(exp.StackTrace);
+            throw;
+        }
+    }
+
+
     public async Task<DateTime> HeartBeat(CancellationToken cancellationToken = default)
     {
         try

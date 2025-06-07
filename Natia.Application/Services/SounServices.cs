@@ -22,7 +22,7 @@ public class SounServices : ISoundService
         }
         try
         {
-            if (DateTime.Now.DayOfYear % 2 == 0)
+            if (DateTime.Now.DayOfWeek  is DayOfWeek.Monday or DayOfWeek.Wednesday or DayOfWeek.Friday or DayOfWeek.Tuesday)
             {
                 return await soundRepository.SpeakNow(text, second);
             }

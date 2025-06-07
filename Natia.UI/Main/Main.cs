@@ -53,6 +53,14 @@ public partial class Main
 
     private readonly ISmtpClientRepository _smtpClientRepository;
 
+    private static List<string> _mailsTOSent = new List<string>()
+    {
+        "aapkhazava22@gmail.com",
+        "jandaga.monitoring@gmail.com",
+        "globaltvsupport@qarva.com",
+        "dimitri.shamugia@gmail.com",
+    };
+
     // Constructor with dependency injection
     public Main(
         ISoundService makeSound,
@@ -506,6 +514,24 @@ $"პროცესორზე მაღალი დატვირთვა�
                                 Satellite = "დეველოპერის შეცდომა",
                                 SuggestedSolution = "შეატყობინე შესაბამის პირს",
                             });
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    var red = _smtpClientRepository.BuildHtmlMessage(ex.Message, ex?.StackTrace ?? "");
+                    await _smtpClientRepository.SendMessage(red);
+                }
+
+
+                try
+                {
+                    var data = await _natiaClient.GetTextToSentInMail();
+                    if(string.IsNullOrEmpty(data))
+                    {
+                        foreach (var item in _mailsTOSent.ToList())
+                        {
+                           await _smtpClientRepository.SendMessage(data, item, $"რეგიონების რეპორტი:{DateTime.Now}");
                         }
                     }
                 }
