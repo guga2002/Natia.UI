@@ -22,13 +22,20 @@ public class SounServices : ISoundService
         }
         try
         {
-            return await soundRepository.SpeakNow(text, second);
+            //return await soundRepository.SpeakNow(text, second);
+            var hour = DateTime.Now.Hour;
 
-            //var hour = DateTime.Now.Hour;
-            //string voice = (hour >= 22 || hour < 6)
             //    ? "ka-GE-GiorgiNeural" 
             //    : "ka-GE-EkaNeural";
-            throw new ArgumentException("Azure speech synthesis failed or returned no data.");
+
+            if (hour >= 22 || hour < 6)
+            {
+                return await _azureSpeechToTextService.ConvertTextToSpeechAsync(text);
+            }
+            else
+            {
+                return await soundRepository.SpeakNow(text, second);
+            }
         }
         catch (Exception)
         {
