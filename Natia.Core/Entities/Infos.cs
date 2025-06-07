@@ -6,7 +6,6 @@ namespace Natia.Core.Entities;
 
 
 [Table("Infos")]
-[Index(nameof(AlarmMessage))]
 public class Infos
 {
     [Key]

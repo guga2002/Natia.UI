@@ -5,10 +5,8 @@ using Microsoft.EntityFrameworkCore;
 namespace Natia.Core.Entities;
 
 [Table("Chanells")]
-[Index(nameof(Name))]
 [Index(nameof(PortIn250))]
 [Index(nameof(FromOptic))]
-[Index(nameof(ChanellFormat))]
 public class Chanells
 {
     [Key]
