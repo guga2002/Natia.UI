@@ -22,21 +22,18 @@ public class SounServices : ISoundService
         }
         try
         {
-            if (DateTime.Now.DayOfWeek  is DayOfWeek.Monday or DayOfWeek.Wednesday or DayOfWeek.Friday or DayOfWeek.Tuesday)
-            {
-                return await soundRepository.SpeakNow(text, second);
-            }
+            return await soundRepository.SpeakNow(text, second);
 
-            var hour = DateTime.Now.Hour;
-            string voice = (hour >= 22 || hour < 6)
-                ? "ka-GE-GiorgiNeural" 
-                : "ka-GE-EkaNeural";
+            //var hour = DateTime.Now.Hour;
+            //string voice = (hour >= 22 || hour < 6)
+            //    ? "ka-GE-GiorgiNeural" 
+            //    : "ka-GE-EkaNeural";
 
-            var azureTry = await _azureSpeechToTextService.ConvertTextToSpeechAsync(text, "ka-GE", voice);
-            if (azureTry != null && azureTry.Length > 0)
-            {
-                return azureTry;
-            }
+            //var azureTry = await _azureSpeechToTextService.ConvertTextToSpeechAsync(text, "ka-GE", voice);
+            //if (azureTry != null && azureTry.Length > 0)
+            //{
+            //    return azureTry;
+            //}
 
             throw new ArgumentException("Azure speech synthesis failed or returned no data.");
         }
