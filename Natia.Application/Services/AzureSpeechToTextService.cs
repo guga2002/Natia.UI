@@ -18,35 +18,49 @@ public class AzureSpeechToTextService : IAzureSpeechToTextService
 
     public async Task<byte[]> ConvertTextToSpeechAsync(string text, string language = "ka-GE", string voiceName = "ka-GE-EkaNeural")
     {
+        if (string.IsNullOrWhiteSpace(text))
+            throw new ArgumentException("Text cannot be empty.", nameof(text));
+
         var url = $"https://{_region}.tts.speech.microsoft.com/cognitiveservices/v1";
-        _httpClient.DefaultRequestHeaders.Clear();
-        _httpClient.DefaultRequestHeaders.Add("User-Agent", "MyApp/1.0");
-        _httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
-        _httpClient.DefaultRequestHeaders.Add("X-Microsoft-OutputFormat", "riff-16khz-16bit-mono-pcm"); // WAV format
 
-        var requestBody = $@"
-        <speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='{language}'>
-            <voice name='{voiceName}'>{System.Net.WebUtility.HtmlEncode(text)}</voice>
-        </speak>";
+        using var request = new HttpRequestMessage(HttpMethod.Post, url);
+        request.Headers.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
+        request.Headers.Add("User-Agent", "NatiaVoiceApp");
+        request.Headers.Add("X-Microsoft-OutputFormat", "riff-16khz-16bit-mono-pcm"); // WAV format
 
-        var content = new StringContent(requestBody, Encoding.UTF8, "application/ssml+xml");
-        var response = await _httpClient.PostAsync(url, content);
+        var ssml = $@"
+<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='{language}'>
+  <voice name='{voiceName}'>{System.Net.WebUtility.HtmlEncode(text)}</voice>
+</speak>";
+
+        request.Content = new StringContent(ssml, Encoding.UTF8, "application/ssml+xml");
+
+        using var response = await _httpClient.SendAsync(request);
 
         if (!response.IsSuccessStatusCode)
         {
-            var errorText = await response.Content.ReadAsStringAsync();
-            throw new Exception($"Azure TTS API failed: {response.StatusCode} - {errorText}");
+            var error = await response.Content.ReadAsStringAsync();
+            throw new Exception($"Azure TTS failed ({response.StatusCode}): {error}");
         }
 
-
-        if (!response.Content.Headers.ContentType.MediaType.StartsWith("audio"))
+        var mediaType = response.Content.Headers.ContentType?.MediaType;
+        if (mediaType == null || !mediaType.StartsWith("audio"))
         {
-            var errorText = await response.Content.ReadAsStringAsync();
-            throw new Exception($"Unexpected response content: {errorText}");
+            var nonAudio = await response.Content.ReadAsStringAsync();
+            throw new Exception($"Expected audio response, got: {nonAudio}");
         }
 
-        return await response.Content.ReadAsByteArrayAsync();
+        var audioBytes = await response.Content.ReadAsByteArrayAsync();
+
+        // Optional: Verify RIFF header to ensure it's a WAV file
+        if (audioBytes.Length < 4 || Encoding.ASCII.GetString(audioBytes, 0, 4) != "RIFF")
+        {
+            throw new Exception("Returned audio is invalid or not in WAV format.");
+        }
+
+        return audioBytes;
     }
+
 
 
 }
