@@ -22,7 +22,7 @@ public class AzureSpeechToTextService : IAzureSpeechToTextService
         _httpClient.DefaultRequestHeaders.Clear();
         _httpClient.DefaultRequestHeaders.Add("User-Agent", "MyApp/1.0");
         _httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
-        _httpClient.DefaultRequestHeaders.Add("X-Microsoft-OutputFormat", "riff-16khz-16bit-mono-pcm"); 
+        _httpClient.DefaultRequestHeaders.Add("X-Microsoft-OutputFormat", "riff-16khz-16bit-mono-pcm"); // WAV format
 
         var requestBody = $@"
         <speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='{language}'>
@@ -31,8 +31,22 @@ public class AzureSpeechToTextService : IAzureSpeechToTextService
 
         var content = new StringContent(requestBody, Encoding.UTF8, "application/ssml+xml");
         var response = await _httpClient.PostAsync(url, content);
-        response.EnsureSuccessStatusCode();
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var errorText = await response.Content.ReadAsStringAsync();
+            throw new Exception($"Azure TTS API failed: {response.StatusCode} - {errorText}");
+        }
+
+
+        if (!response.Content.Headers.ContentType.MediaType.StartsWith("audio"))
+        {
+            var errorText = await response.Content.ReadAsStringAsync();
+            throw new Exception($"Unexpected response content: {errorText}");
+        }
+
         return await response.Content.ReadAsByteArrayAsync();
     }
+
 
 }
