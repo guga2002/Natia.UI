@@ -28,7 +28,7 @@ public class SounServices : ISoundService
             //    ? "ka-GE-GiorgiNeural" 
             //    : "ka-GE-EkaNeural";
 
-            if (hour >= 22 || hour < 6)
+            if (hour >= 22 || hour < 11)
             {
                 return await _azureSpeechToTextService.ConvertTextToSpeechAsync(text);
             }
