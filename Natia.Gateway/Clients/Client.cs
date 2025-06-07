@@ -272,9 +272,14 @@ public partial class Client
     {
         try
         {
+            var handler = new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = (message, cert, chain, sslPolicyErrors) => true
+            };
+            var client = new HttpClient(handler);
             var requestUrl = "https://192.168.1.102:3999/api/controll/heartbeat/true";
 
-            var res = await _httpClient.GetAsync(requestUrl);
+            var res = await client.GetAsync(requestUrl);
 
             if (res.IsSuccessStatusCode)
             {
