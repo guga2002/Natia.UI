@@ -428,22 +428,22 @@ $"პროცესორზე მაღალი დატვირთვა�
                 }
 
 
-                //try
-                //{
-                //    var data = await _natiaClient.GetTextToSentInMail();
-                //    if(!string.IsNullOrEmpty(data)||data.Length>10)
-                //    {
-                //        foreach (var item in _mailsTOSent.ToList())
-                //        {
-                //           await _smtpClientRepository.SendMessage(data, item, $"რეგიონების რეპორტი:{DateTime.Now}");
-                //        }
-                //    }
-                //}
-                //catch (Exception ex)
-                //{
-                //    var red = _smtpClientRepository.BuildHtmlMessage(ex.Message, ex?.StackTrace ?? "");
-                //    await _smtpClientRepository.SendMessage(red);
-                //}
+                try
+                {
+                    var data = await _natiaClient.GetTextToSentInMail();
+                    if (!string.IsNullOrEmpty(data) || data.Length > 10)
+                    {
+                        foreach (var item in _mailsTOSent.ToList())
+                        {
+                            await _smtpClientRepository.SendMessage(data, item, $"რეგიონების რეპორტი:{DateTime.Now}");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    var red = _smtpClientRepository.BuildHtmlMessage(ex.Message, ex?.StackTrace ?? "");
+                    await _smtpClientRepository.SendMessage(red);
+                }
 
 
 
