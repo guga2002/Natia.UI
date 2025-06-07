@@ -272,22 +272,20 @@ public partial class Client
     {
         try
         {
-            //var requestUrl = "http://192.168.1.102:3999/api/controll/heartbeat/true";
+            var requestUrl = "http://192.168.1.102:3999/api/controll/heartbeat/true";
 
-            //var res = await _httpClient.GetAsync(requestUrl);
+            var res = await _httpClient.GetAsync(requestUrl);
 
-            //if (res.IsSuccessStatusCode)
-            //{
-            //    var resultString = await res.Content.ReadAsStringAsync();
-
-            //    var result = JsonConvert.DeserializeObject<DateTime>(resultString);
-            //    return result;
-            //}
-            //else
-            //{
-            //    return DateTime.MinValue;
-            //}
-            return DateTime.Now;
+            if (res.IsSuccessStatusCode)
+            {
+                var resultString = await res.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<DateTime>(resultString);
+                return result;
+            }
+            else
+            {
+                return DateTime.MinValue;
+            }
         }
         catch (Exception exp)
         {
