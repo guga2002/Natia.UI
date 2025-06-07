@@ -1,10 +1,10 @@
 ﻿using Natia.Application.Dtos;
 
-namespace Natia.Application.Contracts
+namespace Natia.Application.Contracts;
+
+public interface ITranscoderService : IcrudService<TranscoderDto>
 {
-    public interface ITranscoderService : IcrudService<TranscoderDto>
-    {
-        Task<TranscoderDto> GetTranscoderInfoByChanellId(int id);
-        Task<int> GetChanellIdBycardandport(int card, int port);
-    }
+    Task<TranscoderDto?> GetTranscoderInfoByChanellId(int id);
+
+    Task<int> GetChanellIdBycardandport(int card, int port);
 }

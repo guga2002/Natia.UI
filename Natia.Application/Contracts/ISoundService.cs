@@ -1,7 +1,6 @@
-﻿namespace Natia.Application.Contracts
+﻿namespace Natia.Application.Contracts;
+
+public interface ISoundService
 {
-    public interface ISoundService
-    {
-        Task<byte[]> SpeakNow(string text, int second = 1);
-    }
+    Task<byte[]?> SpeakNow(string text, int second = 1);
 }

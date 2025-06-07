@@ -1,8 +1,6 @@
-﻿namespace Natia.Application.Contracts
+﻿namespace Natia.Application.Contracts;
+
+public interface IAzureSpeechToTextService
 {
-    public interface IAzureSpeechToTextService
-    {
-        Task<byte[]> SpeakeNow(string text, string languageName = "ka-GE-EkaNeural");
-        Task<string> DecodeFileName(string Name);
-    }
+    Task<byte[]> ConvertTextToSpeechAsync(string text, string language = "ka-GE", string voiceName = "ka-GE-EkaNeural");
 }

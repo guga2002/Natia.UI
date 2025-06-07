@@ -19,7 +19,7 @@ namespace Natia.Core.Repositories
             return res.SourceEmr;
         }
 
-        public async Task<Emr60Info> GetEmrInfoByCHanellName(string Port)
+        public async Task<Emr60Info?> GetEmrInfoByCHanellName(string Port)
         {
             var res = await _mainSet.FirstOrDefaultAsync(io => io.Port == Port);
             if (res == null) return null;

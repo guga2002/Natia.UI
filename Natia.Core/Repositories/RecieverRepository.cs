@@ -11,7 +11,7 @@ namespace Natia.Core.Repositories
         {
         }
 
-        public async Task<Chanells> GetChanellIdByCardandPort(int card, int port)
+        public async Task<Chanells?> GetChanellIdByCardandPort(int card, int port)
         {
             var res = await _mainSet.Include(io => io.Chanell).FirstOrDefaultAsync(io => io.Card == card && io.Port == port);
             if (res is not null)
@@ -21,7 +21,7 @@ namespace Natia.Core.Repositories
             return null;
         }
 
-        public async Task<Reciever> GetRecieverInfoById(int id)
+        public async Task<Reciever?> GetRecieverInfoById(int id)
         {
             return await _mainSet.FirstOrDefaultAsync(io => io.ChanellId == id);
         }

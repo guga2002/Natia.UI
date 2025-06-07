@@ -1,10 +1,10 @@
 ﻿using Natia.Core.Entities;
 
-namespace Natia.Core.Interfaces
+namespace Natia.Core.Interfaces;
+
+public interface IChanellRepository : IBaseRepository<Chanells>
 {
-    public interface IChanellRepository : IBaseRepository<Chanells>
-    {
-        Task<Chanells> GetChanellByPort(int port);
-        Task<Chanells> GetByID(int id);
-    }
+    Task<Chanells?> GetChanellByPort(int port);
+
+    Task<Chanells?> GetByID(int id);
 }

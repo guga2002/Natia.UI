@@ -1,8 +1,8 @@
-﻿namespace NatiaGuard.BrainStorm.Models
+﻿namespace Natia.UI.Models;
+
+public class Info
 {
-    public class Info
-    {
-        public double Cpu { get; set; }
-        public double Ram { get; set; }
-    }
+    public double Cpu { get; set; }
+
+    public double Ram { get; set; }
 }

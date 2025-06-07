@@ -1,7 +1,6 @@
-﻿namespace Natia.Application.Contracts
+﻿namespace Natia.Application.Contracts;
+
+public interface ITempperatureService
 {
-    public interface ITempperatureService
-    {
-        Task<(string, string)> GetCurrentData();
-    }
+    Task<(string, string)> GetCurrentData();
 }

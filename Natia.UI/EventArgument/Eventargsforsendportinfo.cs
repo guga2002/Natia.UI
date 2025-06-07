@@ -1,4 +1,4 @@
-﻿namespace NatiaGuard.BrainStorm.EventArgument
+﻿namespace Natia.UI.EventArgument
 {
     public class Eventargsforsendportinfo : EventArgs
     {

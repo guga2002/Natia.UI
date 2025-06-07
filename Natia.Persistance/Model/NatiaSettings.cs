@@ -1,15 +1,14 @@
-﻿namespace Natia.Persistance.Model
+﻿namespace Natia.Persistance.Model;
+
+public class NatiaSettings
 {
-    public class NatiaSettings
+    public string Language { get; set; }
+
+    public string Model { get; set; }
+
+    public NatiaSettings()
     {
-        public string Language { get; set; }
-
-        public string Model { get; set; }
-
-        public NatiaSettings()
-        {
-            Model = "Nati";
-            Language = "ka-GE";
-        }
+        Model = "Nati";
+        Language = "ka-GE";
     }
 }

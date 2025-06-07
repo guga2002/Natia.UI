@@ -1,7 +1,6 @@
-﻿namespace Natia.Persistance.Interface
+﻿namespace Natia.Persistance.Interface;
+
+public interface ISoundRepository
 {
-    public interface ISoundRepository
-    {
-        Task<byte[]> SpeakNow(string text, int baseRate = 2);
-    }
+    Task<byte[]> SpeakNow(string text, int baseRate = 2);
 }

@@ -11,12 +11,12 @@ namespace Natia.Core.Repositories
         {
         }
 
-        public async Task<Chanells> GetByID(int id)
+        public async Task<Chanells?> GetByID(int id)
         {
             return await _mainSet.Where(io => io.Id == id).FirstOrDefaultAsync();
         }
 
-        public async Task<Chanells> GetChanellByPort(int port)
+        public async Task<Chanells?> GetChanellByPort(int port)
         {
             if (await _mainSet.AnyAsync(io => io.PortIn250 == port))
             {

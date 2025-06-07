@@ -26,12 +26,12 @@ namespace Natia.Application.Services
             });
         }
 
-        public Task<Chanells> GetByID(int id)
+        public Task<Chanells?> GetByID(int id)
         {
             return chan.GetByID(id);
         }
 
-        public async Task<ChanellDto> GetChanellByPort(int port)
+        public async Task<ChanellDto?> GetChanellByPort(int port)
         {
             var res = await chan.GetChanellByPort(port);
             if (res != null)

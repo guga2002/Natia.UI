@@ -1,9 +1,8 @@
 ﻿using Natia.Core.Entities;
 
-namespace Natia.Core.Interfaces
+namespace Natia.Core.Interfaces;
+
+public interface IInfoRepository : IBaseRepository<Infos>
 {
-    public interface IInfoRepository : IBaseRepository<Infos>
-    {
-        Task<Infos> GetInfoByChanellId(int id);
-    }
+    Task<Infos?> GetInfoByChanellId(int id);
 }

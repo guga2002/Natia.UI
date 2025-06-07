@@ -1,5 +1,4 @@
-﻿using NatiaGuard.BrainStorm.Models;
-using NAudio.Wave;
+﻿using NAudio.Wave;
 using Newtonsoft.Json;
 using System.Drawing.Printing;
 using System.Drawing;
@@ -8,11 +7,47 @@ using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using System.Text;
 using Natia.Core.Entities;
+using System.Security.Cryptography;
+using Natia.Neurall.Model;
+using Natia.UI.Models;
 
 namespace NatiaGuard.BrainStorm.Main
 {
     public partial class Main
     {
+
+        private async Task Heartbeat()
+        {
+            var res = await _natiaClient.HeartBeat();
+        }
+
+        private async Task<NeuralPredictionOutput> Predict(CheckAndPlayModel model)
+        {
+            _predict.TrainFromDatabase();
+            var input = new NeuralInput
+            {
+                ChannelName = model.ChannelName,
+                ErrorMessage = model.ErrorMessage,
+                ErrorDetails = model.ErrorDetails,
+                Satellite = model.Satellite,
+            };
+            return await _predict.Predict(input);
+        }
+
+        private SolutionRecommendationOutput Solution(CheckAndPlayModel model)
+        {
+            _Recomendation.TrainModelFromDatabase();
+            var input = new SolutionRecommendationInput
+            {
+                ChannelName = model.ChannelName,
+                ErrorMessage = model.ErrorMessage,
+                ErrorDetails = model.ErrorDetails,
+                Satellite = model.Satellite,
+                Priority = model.Priority.ToString(),
+            };
+            return _Recomendation.Predict(input);
+        }
+
         #region Grammer
         public string CorrectNameI(string Name)
         {
@@ -45,7 +80,7 @@ namespace NatiaGuard.BrainStorm.Main
             if (greetings.Any())
             {
                 var index = ran.Next(0, greetings.Count); 
-                return greetings[index].Text;
+                return greetings[index].Text??"";
             }
             return "გისურვებთ ბედნიერ მორიგეობას";
         }
@@ -92,7 +127,7 @@ namespace NatiaGuard.BrainStorm.Main
                     WeatherData weatherData = JsonConvert.DeserializeObject<WeatherData>(jsonResponse) ??
                     throw new ArgumentException("No data present");
 
-                    return (weatherData.current.temperature_2m, weatherData.current.wind_speed_10m);
+                    return (weatherData?.current?.temperature_2m??0.0, weatherData?.current?.wind_speed_10m??0.0);
                 }
                 else
                 {
@@ -156,7 +191,7 @@ namespace NatiaGuard.BrainStorm.Main
             }
             catch (Exception ex)
             {
-                var res = _smtpClientRepository.BuildHtmlMessage(ex.Message, ex.StackTrace);
+                var res = _smtpClientRepository.BuildHtmlMessage(ex.Message, ex?.StackTrace??"");
                 await _smtpClientRepository.SendMessage(res);
                 return "კარგი ამინდია";
             }
@@ -191,7 +226,7 @@ namespace NatiaGuard.BrainStorm.Main
             }
             catch (Exception ex)
             {
-                var res = _smtpClientRepository.BuildHtmlMessage(ex.Message, ex.StackTrace);
+                var res = _smtpClientRepository.BuildHtmlMessage(ex.Message, ex?.StackTrace??"");
                 _smtpClientRepository.SendMessage(res);
             }
         }
@@ -218,7 +253,7 @@ namespace NatiaGuard.BrainStorm.Main
             {
                 var res = _smtpClientRepository.BuildHtmlMessage(ex.Message, ex?.StackTrace??"");
                 await _smtpClientRepository.SendMessage(res);
-                Console.WriteLine($"An error occurred during audio playback: {ex.Message}");
+                Console.WriteLine($"An error occurred during audio playback: {ex?.Message}");
             }
         }
         #endregion
@@ -226,124 +261,129 @@ namespace NatiaGuard.BrainStorm.Main
         #region CheckAndPlayAsync
         public async Task CheckAndPlayAsync(CheckAndPlayModel Model, string filename = "Empty")
         {
-            try
-            {
-                await _natiaClient.MakeNatiaSpeake(Model.WhatNatiaSaid);
-            }
-            catch (Exception)
-            {
-
-                await CheckAndPlayAsync(new CheckAndPlayModel
-                {
-                    WhatNatiaSaid = "საიტთან წვდომა დავკარგე, გთხოვ იქნებ გადაამოწმო",
-                    IsCritical = true,
-                    IsError = true,
-                    Priority = Priority.საშუალო,
-                    WhatWasTopic = Topic.დეველოპერისშეცდომა,
-                    ErrorDetails = "წვდომა დავკარგე",
-                    ErrorMessage = "საიტი გაითიშა",
-                    ChannelName = "შეცდომა დეველოპმენტის დროს",
-                    Satellite = "შეცომა",
-                    SuggestedSolution = "შეატყობინე შესაბამის პირს",
-                });
-            }
-
-            if (!await neuralRepository.RecordExist(Model.WhatNatiaSaid))
-            {
-                var neurall = new Natia.Core.Entities.Neurall()
-                {
-                    ActionDate = DateTime.Now,
-                    ChannelName = Model.ChannelName,
-                    IsCritical = Model.IsCritical,
-                    IsError = Model.IsError,
-                    Priority = Model.Priority,
-                    SuggestedSolution = Model.SuggestedSolution,
-                    ErrorMessage = Model.ErrorMessage,
-                    ErrorDetails = Model.ErrorDetails,
-                    Satellite = Model.Satellite,
-                    WhatNatiaSaid = Model.WhatNatiaSaid,
-                    WhatWasTopic = Model.WhatWasTopic,
-                };
-                await neuralRepository.AddNewRecord(neurall);
-                await Console.Out.WriteLineAsync("daemataa Neuralli");
-            }
-            string sharedFolderPath = @"\\192.168.1.102\ShearedFolders\Sounds";
-
-            if (!Directory.Exists(sharedFolderPath))
-            {
-                Directory.CreateDirectory(sharedFolderPath);
-            }
-
-            string fileName = $"{EncodeName(Model.WhatNatiaSaid)}.wav";
-            if (filename is not "Empty")
-            {
-                fileName = $"{EncodeName(filename)}.wav";
-            }
-
-            string filePath = Path.Combine(sharedFolderPath, fileName);
-            
-
-            if (File.Exists(filePath))
+            if (Model?.WhatNatiaSaid is not null)
             {
                 try
                 {
-                    await PlayAudio(filePath);
+                    await _natiaClient.MakeNatiaSpeake(Model.WhatNatiaSaid);
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    var res = _smtpClientRepository.BuildHtmlMessage(ex.Message, ex.StackTrace);
-                    await _smtpClientRepository.SendMessage(res);
+
                     await CheckAndPlayAsync(new CheckAndPlayModel
                     {
-                        WhatNatiaSaid = "შეცდომა საუბრის დროს გადაამოწმე სასწრაფოდ,გუგას უკვე შევატყობინე",
+                        WhatNatiaSaid = "საიტთან წვდომა დავკარგე, გთხოვ იქნებ გადაამოწმო",
                         IsCritical = true,
                         IsError = true,
                         Priority = Priority.საშუალო,
                         WhatWasTopic = Topic.დეველოპერისშეცდომა,
-                        ErrorDetails = ex.StackTrace,
-                        ErrorMessage = ex.Message,
+                        ErrorDetails = "წვდომა დავკარგე",
+                        ErrorMessage = "საიტი გაითიშა",
                         ChannelName = "შეცდომა დეველოპმენტის დროს",
                         Satellite = "შეცომა",
                         SuggestedSolution = "შეატყობინე შესაბამის პირს",
                     });
-                    Console.WriteLine($"Error playing sound: {ex.Message}");
                 }
-            }
-            else
-            {
-                try
+
+                if (!await neuralRepository.RecordExist(Model.WhatNatiaSaid))
                 {
-                    byte[] speakeText = await _makeSound.SpeakNow(Model.WhatNatiaSaid);
-                    await SaveAudioToFile(speakeText, filePath);
-                    await PlayAudio(filePath);
-                }
-                catch (Exception ex)
-                {
-                    var res = _smtpClientRepository.BuildHtmlMessage(ex.Message, ex.StackTrace);
-                    await _smtpClientRepository.SendMessage(res);
-                    await CheckAndPlayAsync(new CheckAndPlayModel
+                    var neurall = new Neurall()
                     {
-                        WhatNatiaSaid = "შეცდომა საუბრის დროს გადაამოწმე სასწრაფოდ,გუგას უკვე შევატყობინე",
-                        IsCritical = true,
-                        IsError = true,
-                        Priority = Priority.საშუალო,
-                        WhatWasTopic = Topic.დეველოპერისშეცდომა,
-                        ErrorDetails = ex.StackTrace,
-                        ErrorMessage = ex.Message,
-                        ChannelName = "შეცდომა",
-                        Satellite = "შესცომა საუბრისას",
-                        SuggestedSolution = "შეატყობინე შესაბამის პირს"
-                    });
-                    Console.WriteLine($"Error processing text: {ex.Message}");
+                        ActionDate = DateTime.Now,
+                        ChannelName = Model?.ChannelName,
+                        IsCritical = Model?.IsCritical??true,
+                        IsError = Model?.IsError??true,
+                        Priority = Model?.Priority??Priority.კრიტიკული,
+                        SuggestedSolution = Model?.SuggestedSolution,
+                        ErrorMessage = Model?.ErrorMessage,
+                        ErrorDetails = Model?.ErrorDetails,
+                        Satellite = Model?.Satellite,
+                        WhatNatiaSaid = Model?.WhatNatiaSaid,
+                        WhatWasTopic = Model?.WhatWasTopic??Topic.სხვა,
+                    };
+                    await neuralRepository.AddNewRecord(neurall);
+                    await Console.Out.WriteLineAsync("daemataa Neuralli");
+                }
+                string sharedFolderPath = @"\\192.168.1.102\ShearedFolders\Sounds";
+
+                if (!Directory.Exists(sharedFolderPath))
+                {
+                    Directory.CreateDirectory(sharedFolderPath);
+                }
+
+                string fileName = $"{EncodeName(Model?.WhatNatiaSaid??"")}.wav";
+
+                string filePath = Path.Combine(sharedFolderPath, fileName);
+
+
+                if (File.Exists(filePath))
+                {
+                    try
+                    {
+                        await PlayAudio(filePath);
+                    }
+                    catch (Exception ex)
+                    {
+                        var res = _smtpClientRepository.BuildHtmlMessage(ex.Message, ex?.StackTrace??"");
+                        await _smtpClientRepository.SendMessage(res);
+                        await CheckAndPlayAsync(new CheckAndPlayModel
+                        {
+                            WhatNatiaSaid = "შეცდომა საუბრის დროს გადაამოწმე სასწრაფოდ,გუგას უკვე შევატყობინე",
+                            IsCritical = true,
+                            IsError = true,
+                            Priority = Priority.საშუალო,
+                            WhatWasTopic = Topic.დეველოპერისშეცდომა,
+                            ErrorDetails = ex?.StackTrace,
+                            ErrorMessage = ex?.Message,
+                            ChannelName = "შეცდომა დეველოპმენტის დროს",
+                            Satellite = "შეცომა",
+                            SuggestedSolution = "შეატყობინე შესაბამის პირს",
+                        });
+                        Console.WriteLine($"Error playing sound: {ex?.Message}");
+                    }
+                }
+                else
+                {
+                    try
+                    {
+                        var speakeText = await _makeSound.SpeakNow(Model?.WhatNatiaSaid??"");
+                        await SaveAudioToFile(speakeText, filePath);
+                        await PlayAudio(filePath);
+                    }
+                    catch (Exception ex)
+                    {
+                        var res = _smtpClientRepository.BuildHtmlMessage(ex.Message, ex?.StackTrace??"");
+                        await _smtpClientRepository.SendMessage(res);
+                        await CheckAndPlayAsync(new CheckAndPlayModel
+                        {
+                            WhatNatiaSaid = "შეცდომა საუბრის დროს გადაამოწმე სასწრაფოდ,გუგას უკვე შევატყობინე",
+                            IsCritical = true,
+                            IsError = true,
+                            Priority = Priority.საშუალო,
+                            WhatWasTopic = Topic.დეველოპერისშეცდომა,
+                            ErrorDetails = ex?.StackTrace,
+                            ErrorMessage = ex?.Message,
+                            ChannelName = "შეცდომა",
+                            Satellite = "შესცომა საუბრისას",
+                            SuggestedSolution = "შეატყობინე შესაბამის პირს"
+                        });
+                        Console.WriteLine($"Error processing text: {ex?.Message}");
+                    }
                 }
             }
         }
         #endregion
 
         #region PlayAudioAndSave
-        private async Task PlayAudioAndSave(byte[] audio, string Name,string text="ნათა მოგესალმებათ")
+        private async Task PlayAudioAndSave(byte[]? audio, string Name,string text="ნათია მოგესალმებათ")
         {
-           await _natiaClient.MakeNatiaSpeake(text.ToString());
+            if (audio == null || audio.Length == 0)
+            {
+                Console.WriteLine("No audio data provided.");
+                return;
+            }
+
+            await _natiaClient.MakeNatiaSpeake(text.ToString());
 
             string sharedFolderPath = @"\\192.168.1.102\ShearedFolders\Sounds";
 
@@ -370,17 +410,22 @@ namespace NatiaGuard.BrainStorm.Main
         #endregion
 
         #region SaveAudioToFile
-        private async Task SaveAudioToFile(byte[] audioData, string filePath)
+        private async Task SaveAudioToFile(byte[]? audioData, string filePath)
         {
+            if (audioData == null || audioData.Length == 0)
+            {
+                Console.WriteLine("No audio data provided.");
+                return;
+            }
             try
             {
                 File.WriteAllBytes(filePath, audioData);
             }
             catch (Exception ex)
             {
-                var res = _smtpClientRepository.BuildHtmlMessage(ex.Message, ex.StackTrace);
+                var res = _smtpClientRepository.BuildHtmlMessage(ex.Message, ex?.StackTrace??"");
                 await _smtpClientRepository.SendMessage(res);
-                Console.WriteLine($"An error occurred while saving the audio file: {ex.Message}");
+                Console.WriteLine($"An error occurred while saving the audio file: {ex?.Message}");
             }
         }
         #endregion
@@ -428,408 +473,21 @@ namespace NatiaGuard.BrainStorm.Main
 
         #endregion
 
-        #region CheckMail
-
-        private async Task CheckMail()
+        #region Encoder
+        public static string EncodeName(string input)
         {
-            var messages=await _imapService.CheckForNewMessage();
-
-            if(messages.Any())
-            {
-                await PlayAudioAndSave(await _makeSound.SpeakNow("მეილზე გვაქვს ახალი შეტყობინება", 1), "მეილზეხალი", "მეილზე გვაქვს ახალი შეტყობინება");
-                foreach (var item in messages)
-                {
-                    await PlayAudioAndSave(await _makeSound.SpeakNow($"გამომგზავნი{item.Name}; თემატიკა:{item.Subject};შეტყობინება:{item.Body}", 1),Guid.NewGuid().ToString(), $"გამომგზავნი{item.Name}; თემატიკა:{item.Subject};შეტყობინება:{item.Body}");
-                }
-                await PlayAudioAndSave(await _makeSound.SpeakNow("საჭიროების შემთხვევაში შეამოწმე მეილი", 1), "შემოწმება", "საჭიროების შემთხვევაში შეამწმე მეილი");
-            }
-        }
-
-        private async Task ReplayToUser()
-        {
-
-            var message = await _imapService.CheckforReplay();
-
-            foreach (var item in message)
-            {
-                if (item.Body.ToLower().Contains("report") || item.Body.ToLower().Contains("chanell report") || item.Body.Contains("რეპორტი") || item.Body.Contains("შეცდომა")||item.Body.Contains("პრობლემა"))
-                {
-                    var info = await _db.Neuralls.Take(10).ToListAsync();
-                    await _smtpClientRepository.SendMessage(MakeShablon(info), item.Email, $"{item.Name},გიგზავნი პასუხს,");
-                }
-
-                if(item.Body.ToLower().Contains("usage")|| item.Body.ToLower().Contains("data")|| item.Body.ToLower().Contains("მონაცემები"))
-                {
-                    PerformanceCounter ramCounter = new PerformanceCounter("Memory", "Available MBytes");
-                    PerformanceCounter cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
-                    float availableRAM = ramCounter.NextValue();
-                    var axlaiyenebs = 8000 - availableRAM;
-
-                    var percent = axlaiyenebs / 8000 * 100;
-                    float cpuUsage = cpuCounter.NextValue();
-
-                    await _smtpClientRepository.SendMessage(ShablonForComputer(percent,cpuUsage), item.Email, $"{item.Name},გიგზავნი ჩემს სასიცოცხლო მონაცემებს");
-                }
-
-                if (item.Body.ToLower().Contains("hello") ||
-                      item.Body.ToLower().Contains("hi") ||
-                      item.Body.ToLower().Contains("greetings") ||
-                      item.Body.Contains("გამარჯობა"))
-                {
-                    string response = $"გამარჯობა, {item.Name}! მე მზად ვარ დაგეხმარო ნებისმიერ კითხვაში ან პრობლემის გადაჭრაში!";
-                    await _smtpClientRepository.SendMessage(response, item.Email, "პასუხი შენს შეტყობინებაზე");
-                }
-                else if (item.Body.ToLower().Contains("uptime"))
-                {
-                    TimeSpan uptime = TimeSpan.FromMilliseconds(Environment.TickCount);
-                    string uptimeMessage = $"სისტემა აქტიურია უკვე {uptime.Days} დღე, {uptime.Hours} საათი და {uptime.Minutes} წუთი.";
-                    await _smtpClientRepository.SendMessage(uptimeMessage, item.Email, "სისტემის მუშაობის დრო");
-                }
-                else if (item.Body.ToLower().Contains("status"))
-                {
-                    string statusMessage = "ყველაფერი კარგად მუშაობს. მე აქ ვარ, რათა დაგეხმარო ნებისმიერ დროს!";
-                    await _smtpClientRepository.SendMessage(statusMessage, item.Email, "სისტემის სტატუსი");
-                }
-                else if (item.Body.ToLower().Contains("version"))
-                {
-                    string versionMessage = "სისტემა ახლა მუშაობს ვერსია 1.2.0-ზე. ახალი ფუნქციები მალე დაემატება!";
-                    await _smtpClientRepository.SendMessage(versionMessage, item.Email, "ვერსიის ინფორმაცია");
-                }
-
-                // Assistance Cases
-                else if (item.Body.ToLower().Contains("help"))
-                {
-                    string helpResponse = "თუ დახმარება გჭირდებათ, აქ ვარ! უბრალოდ დაწერეთ და მე შევეცდები პასუხის გაცემას.";
-                    await _smtpClientRepository.SendMessage(helpResponse, item.Email, "დახმარების პასუხი");
-                }
-                else if (item.Body.ToLower().Contains("error"))
-                {
-                    string errorResponse = "შეცდომა? მე აქ ვარ, რომ გავარკვიოთ და გადავწყვიტოთ. გთხოვთ, დეტალურად აღწეროთ პრობლემა.";
-                    await _smtpClientRepository.SendMessage(errorResponse, item.Email, "შეცდომის პასუხი");
-                }
-                else if (item.Body.ToLower().Contains("settings"))
-                {
-                    string settingsResponse = "გთხოვთ, მოაწესრიგოთ თქვენი პარამეტრები და მოხსენით პრობლემები. მე აქ ვარ დახმარებისთვის!";
-                    await _smtpClientRepository.SendMessage(settingsResponse, item.Email, "პარამეტრების ინფორმაცია");
-                }
-
-                // Fun and Interactive Cases
-                else if (item.Body.ToLower().Contains("joke") || item.Body.ToLower().Contains("ანეკდოტი"))
-                {
-                    string joke = "რატომ დადიან ჩიტები სკოლაში? რომ ჰქონდეთ მაგარი განათლება! 😄";
-                    await _smtpClientRepository.SendMessage(joke, item.Email, "მხიარული ანეკდოტი");
-                }
-                else if (item.Body.ToLower().Contains("fact") || item.Body.ToLower().Contains("ფაქტი"))
-                {
-                    string fact = "იცით თუ არა, რომ მეტროში ჰაერის წნევა ადვილად მოქმედებს სხეულზე? უცნაური, არა?";
-                    await _smtpClientRepository.SendMessage(fact, item.Email, "საინტერესო ფაქტი");
-                }
-                else if (item.Body.ToLower().Contains("quote") || item.Body.ToLower().Contains("ციტატა"))
-                {
-                    string quote = "ცხოვრება მოკლეა, ამიტომ აკეთეთ ის, რაც გიყვართ! ✨";
-                    await _smtpClientRepository.SendMessage(quote, item.Email, "ციტატა");
-                }
-                else if (item.Body.ToLower().Contains("weather"))
-                {
-                    string weather = "ამინდის ინფორმაცია ჯერ კიდევ დამუშავების პროცესშია, მაგრამ მწვანე ტყე ყოველთვის ლამაზია!";
-                    await _smtpClientRepository.SendMessage(weather, item.Email, "ამინდის ინფორმაცია");
-                }
-                else if (item.Body.ToLower().Contains("random number"))
-                {
-                    var random = new Random();
-                    int randomNumber = random.Next(1, 100);
-                    string randomResponse = $"შემთხვევითი რიცხვი არის: {randomNumber}.";
-                    await _smtpClientRepository.SendMessage(randomResponse, item.Email, "შემთხვევითი რიცხვი");
-                }
-
-                // Greetings and Personal Interaction
-                else if (item.Body.ToLower().Contains("hello") || item.Body.ToLower().Contains("hi") || item.Body.ToLower().Contains("greetings") || item.Body.ToLower().Contains("გამარჯობა"))
-                {
-                    string response = $"გამარჯობა, {item.Name}! მე მზად ვარ დაგეხმარო ნებისმიერ კითხვაში ან პრობლემაში!";
-                    await _smtpClientRepository.SendMessage(response, item.Email, "პასუხი შენი შეტყობინებისთვის");
-                }
-                else if (item.Body.ToLower().Contains("who am i")||item.Body.Contains("ვინ ვარ"))
-                {
-                    string whoAmIResponse = $"{item.Name}, თქვენ გამორჩეული ხართ! ეს საკმარისი უნდა იყოს. 😊";
-                    await _smtpClientRepository.SendMessage(whoAmIResponse, item.Email, "ვინ ხართ თქვენ");
-                }
-                else if (item.Body.ToLower().Contains("who are you")||item.Body.Contains("ვინ ხარ"))
-                {
-                    string systemResponse = "მე ვარ ნათია, თქვენი საიმედო ვირტუალური ასისტენტი!";
-                    await _smtpClientRepository.SendMessage(systemResponse, item.Email, "ვინ ვარ მე");
-                }
-
-                // Productivity and Practical Tools
-                else if (item.Body.ToLower().Contains("reminder"))
-                {
-                    string reminderResponse = $"შეგახსენებთ, რომ შეგიძლიათ დამიკავშირდეთ ნებისმიერ დროს! მე აქ ვარ თქვენი დახმარებისთვის.";
-                    await _smtpClientRepository.SendMessage(reminderResponse, item.Email, "შეგახსენება");
-                }
-                else if (item.Body.ToLower().Contains("task"))
-                {
-                    string taskResponse = "შეიტანეთ თქვენი ამოცანები და მე დაგეხმარებით მათ დროულად შესრულებაში!";
-                    await _smtpClientRepository.SendMessage(taskResponse, item.Email, "შეტყობინება ამოცანების შესახებ");
-                }
-                else if (item.Body.ToLower().Contains("calendar")|| item.Body.Contains("დღე")|| item.Body.Contains("თარიღი"))
-                {
-                    string calendarResponse = "თქვენი კალენდრის მონაცემები ჯერ არ მაქვს, მაგრამ მალე ამასაც დავამატებ!";
-                    await _smtpClientRepository.SendMessage(calendarResponse, item.Email, "კალენდრის მონაცემები");
-                }
-                else if (item.Body.ToLower().Contains("time")||item.Body.Contains("საათი"))
-                {
-                    string currentTime = DateTime.Now.ToString("HH:mm:ss");
-                    string timeMessage = $"ახლა არის {currentTime}. თუ რამე დაგჭირდეს, აქ ვარ!";
-                    await _smtpClientRepository.SendMessage(timeMessage, item.Email, "მიმდინარე დრო");
-                }
-                else
-                {
-                    string defaultMessage = "ბოდიშით, თქვენი მოთხოვნა ვერ გავიგე. გთხოვთ, უფრო კონკრეტული ინფორმაციის მოწოდება!";
-                    await _smtpClientRepository.SendMessage(defaultMessage, item.Email, "შეტყობინების პასუხი");
-                }
-            }
-        }
-
-
-        private string ShablonForComputer(float ram,float cpu)
-        {
-            var res = @$"<!DOCTYPE html>
-<html lang=""ka"">
-<head>
-    <meta charset=""UTF-8"">
-    <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
-    <title>სისტემის შესრულების ანგარიშის</title>
-    <style>
-        body {{
-            font-family: Arial, sans-serif;
-            background-color: #f9f9f9;
-            margin: 0;
-            padding: 0;
-        }}
-        .container {{
-            max-width: 600px;
-            margin: 20px auto;
-            background-color: #ffffff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }}
-        h1 {{
-            text-align: center;
-            color: #333333;
-        }}
-        p {{
-            font-size: 16px;
-            color: #666666;
-            line-height: 1.6;
-        }}
-        .highlight {{
-            color: #4CAF50;
-            font-weight: bold;
-        }}
-        .critical {{
-            color: #ff4d4d;
-            font-weight: bold;
-        }}
-        .table-container {{
-            margin-top: 20px;
-        }}
-        table {{
-            width: 100%;
-            border-collapse: collapse;
-            margin: 10px 0;
-        }}
-        th, td {{
-            padding: 12px;
-            text-align: left;
-            border: 1px solid #dddddd;
-        }}
-        th {{
-            background-color: #4CAF50;
-            color: white;
-        }}
-        tr:nth-child(even) {{
-            background-color: #f2f2f2;
-        }}
-    </style>
-</head>
-<body>
-    <div class=""container"">
-        <h1>ნათიას სასიცოცხლო მონაცემები</h1>
-        <p>
-           იხილეთ სისტემის ამჭამინდელი სიცოცხლის მაჩვენებელი:
-        </p>
-        <div class=""table-container"">
-            <table>
-                <thead>
-                    <tr>
-                        <th>მეტრიკა</th>
-                        <th>მნიშვნელობა</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>ხელმისაწვდომი RAM</td>
-                        <td class=""{{RAMClass}}"">{100 - ram}%</td>
-                    </tr>
-                    <tr>
-                        <td>ამჟამად სისტემა იყენებს</td>
-                        <td class=""{{RAMClass}}"">{ram}%</td>
-                    </tr>
-                    <tr>
-                        <td>CPU-ს იყენებს</td>
-                        <td class=""{{CPUClass}}"">{cpu}%</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <p>
-            დეტალური ინფორმაციისთვის, გთხოვთ, გადაამოწმოთ სისტემის ლოგები ან დაუკავშირდით ადმინისტრატორს.
-        </p>
-    </div>
-</body>
-</html>
-";
-            return res;
-        }
-
-
-        private string MakeShablon(List<Natia.Core.Entities.Neurall>lst)
-        {
-            var res = @$"<!DOCTYPE html>
-<html lang=""en"">
-<head>
-    <meta charset=""UTF-8"">
-    <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
-    <title>Neurall Data Report</title>
-    <style>
-        body {{
-            font-family: Arial, sans-serif;
-            background-color: #f9f9f9;
-            margin: 0;
-            padding: 0;
-        }}
-        .container {{
-            max-width: 800px;
-            margin: 20px auto;
-            background-color: #ffffff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }}
-        h1 {{
-            text-align: center;
-            color: #333333;
-        }}
-        table {{
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }}
-        th, td {{
-            padding: 12px;
-            border: 1px solid #dddddd;
-            text-align: left;
-        }}
-        th {{
-            background-color: #4CAF50;
-            color: white;
-        }}
-        tr:nth-child(even) {{
-            background-color: #f2f2f2;
-        }}
-        .critical {{
-            color: #ff4d4d;
-            font-weight: bold;
-        }}
-        .medium {{
-            color: #ffa500;
-        }}
-        .low {{
-            color: #4CAF50;
-        }}
-    </style>
-</head>
-<body>
-    <div class=""container"">
-        <h1>სადგურის გათიშვების რეპორტი</h1>
-        <table>
-            <thead>
-                <tr>
-                   <th>არხის სახელი</th>
-                    <th>თარიღი</th>
-                    <th>რა თქვა ნათიამ</th>
-                    <th>კრიტიკულია?</th>
-                    <th>შეტყობინება</th>
-                    <th>დეტალები</th>
-                    <th>რჩევა</th>
-                </tr>
-            </thead>
-            <tbody>";
-
-            foreach (var item in lst)
-            {
-                var kritik= item.IsCritical? "კრიტიკულია":"უსაფრთხოა";
-                res += @$"
-                <tr>
-                    <td>{item.ChannelName}</td>
-                    <td>{item.ActionDate}</td>
-                    <td>{item.WhatNatiaSaid}</td>
-                    <td class=""low"">{kritik}</td>
-                    <td>{item.ErrorMessage}</td>
-                    <td>{item.ErrorDetails}</td>
-                    <td>{item.SuggestedSolution}</td>
-                </tr>
-";
-            }
-            res += @"  </tbody>
-        </table>
-    </div>
-</body>
-</html>";
-            return res;
-        }
-        #endregion
-
-        #region Encoder and Decode
-        private const int MaxNameLength = 20;
-        private const int Offset = 3;
-
-        public static string EncodeName(string name)
-        {
-            if (string.IsNullOrWhiteSpace(name))
+            if (string.IsNullOrWhiteSpace(input))
                 return string.Empty;
 
-            var letters = name
-                .Where(char.IsLetter)
-                .Take(MaxNameLength)
-                .Select(c => ShiftChar(c, Offset));
+            using var sha256 = SHA256.Create();
+            byte[] hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(input));
 
-            return new string(letters.ToArray());
-        }
+            string base64 = Convert.ToBase64String(hashBytes)
+                .Replace('+', '-')
+                .Replace('/', '_')
+                .TrimEnd('=');
 
-
-        private static char ShiftChar(char c, int offset)
-        {
-            if (char.IsUpper(c) && c <= 'Z')
-                return (char)((((c - 'A') + offset + 26) % 26) + 'A');
-
-            if (char.IsLower(c) && c <= 'z')
-                return (char)((((c - 'a') + offset + 26) % 26) + 'a');
-
-            return c;
-        }
-
-
-        public static string DecodeName(string encodedName)
-        {
-            if (string.IsNullOrEmpty(encodedName)) return encodedName;
-
-            StringBuilder decodedName = new StringBuilder();
-            foreach (char c in encodedName)
-            {
-                decodedName.Append((char)(c - Offset));
-            }
-            return decodedName.ToString();
+            return base64;
         }
 
         #endregion

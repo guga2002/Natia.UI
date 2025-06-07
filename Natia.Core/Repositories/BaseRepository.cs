@@ -14,10 +14,10 @@ namespace Natia.Core.Repositories
         }
         public async Task Add(T item)
         {
-
             await _mainSet.AddAsync(item);
             await _context.SaveChangesAsync();
         }
+
         public async Task Remove(int id)
         {
             var res = await _mainSet.FindAsync(id);
@@ -27,6 +27,7 @@ namespace Natia.Core.Repositories
                 await _context.SaveChangesAsync();
             }
         }
+
         public async Task View(int id)
         {
             var res = await _mainSet.FindAsync(id);

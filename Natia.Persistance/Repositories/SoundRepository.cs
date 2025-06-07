@@ -1,70 +1,61 @@
-﻿using Microsoft.Extensions.Options;
-using Natia.Persistance.Interface;
+﻿using Natia.Persistance.Interface;
 using Natia.Persistance.Model;
 using System.Speech.Synthesis;
 
-namespace Natia.Persistance.Repositories
+namespace Natia.Persistance.Repositories;
+
+public class SoundRepository : ISoundRepository
 {
-    public class SoundRepository : ISoundRepository
+    private readonly NatiaSettings natiaSettings;
+
+    public SoundRepository()
     {
-        private readonly NatiaSettings natiaSettings;
+        natiaSettings = new NatiaSettings();
+    }
 
-        public SoundRepository()
+    public async Task<byte[]> SpeakNow(string text, int baseRate = 2)
+    {
+        try
         {
-            natiaSettings = new NatiaSettings();
-        }
+            Random random = new Random();
+            await Task.Delay(1);
 
-        public async Task<byte[]> SpeakNow(string text, int baseRate = 2)
-        {
-            try
+            using (var synthesizer = new SpeechSynthesizer())
+            using (var memoryStream = new MemoryStream())
             {
-                Random random = new Random();
-                await Task.Delay(1);
+                var voices = synthesizer.GetInstalledVoices()
+                                         .Where(voice => voice.Enabled)
+                                         .ToList();
 
-                using (var synthesizer = new SpeechSynthesizer())
-                using (var memoryStream = new MemoryStream())
+                var selectedVoice = voices.FirstOrDefault(voice =>
+                    voice.VoiceInfo.Culture.Name.StartsWith(natiaSettings.Language) &&
+                    voice.VoiceInfo.Name.Contains(natiaSettings.Model));
+
+                if (selectedVoice != null)
                 {
-                    var voices = synthesizer.GetInstalledVoices()
-                                             .Where(voice => voice.Enabled)
-                                             .ToList();
+                    synthesizer.SelectVoice(selectedVoice.VoiceInfo.Name);
 
-                    foreach (var item in voices)
-                    {
-                        await Console.Out.WriteLineAsync( item.VoiceInfo.Name);
-                        await Console.Out.WriteLineAsync(item.VoiceInfo.Culture.Name);
-                    }
+                    synthesizer.Rate = baseRate + random.Next(-2, 3);
+                    synthesizer.Volume = random.Next(75, 101);
 
-                    // Select a voice that matches settings
-                    var selectedVoice = voices.FirstOrDefault(voice =>
-                        voice.VoiceInfo.Culture.Name.StartsWith(natiaSettings.Language) &&
-                        voice.VoiceInfo.Name.Contains(natiaSettings.Model));
+                    synthesizer.SetOutputToWaveStream(memoryStream);
 
-                    if (selectedVoice != null)
-                    {
-                        synthesizer.SelectVoice(selectedVoice.VoiceInfo.Name);
+                    synthesizer.Speak(text);
 
-                        synthesizer.Rate = baseRate + random.Next(-2, 3);
-                        synthesizer.Volume = random.Next(75, 101);
-
-                        synthesizer.SetOutputToWaveStream(memoryStream);
-
-                        synthesizer.Speak(text);
-
-                        return memoryStream.ToArray();
-                    }
-                    else
-                    {
-                        Console.WriteLine("No matching voice found.");
-                        return null;
-                    }
+                    return memoryStream.ToArray();
+                }
+                else
+                {
+                    Console.WriteLine("No matching voice found.");
+                    return null;
                 }
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error while speaking: {ex.Message}");
-                return null;
-            }
         }
-
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error while speaking: {ex.Message}");
+            return null;
+        }
     }
+
 }

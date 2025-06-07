@@ -1,26 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
-namespace Natia.Core.Entities
+namespace Natia.Core.Entities;
+
+
+[Table("Infos")]
+[Index(nameof(AlarmMessage))]
+public class Infos
 {
+    [Key]
+    public int Id { get; set; }
 
-    [Table("Infos")]
-    public class Infos
-    {
-        [Key]
-        public int Id { get; set; }
+    [Column("Alarm_For_Display")]
+    public string? AlarmMessage { get; set; }
 
-        [Column("Alarm_For_Display")]
-        public string? AlarmMessage { get; set; }
+    [ForeignKey("chanell")]
+    [Column("CHanell_Id")]
+    public int CHanellId { get; set; }
 
-        [ForeignKey("chanell")]
-        [Column("CHanell_Id")]
-        public int CHanellId { get; set; }
-        public Chanells? chanell { get; set; }
-    }
+    public Chanells? chanell { get; set; }
 }

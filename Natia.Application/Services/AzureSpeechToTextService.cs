@@ -1,73 +1,37 @@
-﻿using Microsoft.CognitiveServices.Speech;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Speech.Synthesis;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
 using Natia.Application.Contracts;
 
-namespace Natia.Application.Services
+namespace Natia.Application.Services;
+
+public class AzureSpeechToTextService : IAzureSpeechToTextService
 {
-    public class AzureSpeechToTextService : IAzureSpeechToTextService
+    private readonly string _subscriptionKey;
+    private readonly string _region;
+    private readonly HttpClient _httpClient;
+
+    public AzureSpeechToTextService(HttpClient httpClient)
     {
-        private readonly string _subscriptionKey;
-        private readonly string _region;
+        _subscriptionKey = "7HQ1HuS4dsFB2sZwgF6ag1VeqcEFpi6INL9ZumoyNwKhGdyz966TJQQJ99BCAC5RqLJXJ3w3AAAAACOGG9YK";
+        _region = "westeurope";
+        _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+    }
 
-        public AzureSpeechToTextService()
-        {
-            _subscriptionKey = "48325d19738e4b579735c9a00e92ac09";
-            _region = "eastus";
-        }
+    public async Task<byte[]> ConvertTextToSpeechAsync(string text, string language = "ka-GE", string voiceName = "ka-GE-EkaNeural")
+    {
+        var url = $"https://{_region}.tts.speech.microsoft.com/cognitiveservices/v1";
+        _httpClient.DefaultRequestHeaders.Clear();
+        _httpClient.DefaultRequestHeaders.Add("User-Agent", "MyApp/1.0");
+        _httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
+        _httpClient.DefaultRequestHeaders.Add("X-Microsoft-OutputFormat", "audio-16khz-32kbitrate-mono-mp3");
 
-        public async Task<string> DecodeFileName(string Name)
-        {
-            await Task.Delay(1);
-            using (MD5 md5 = MD5.Create())
-            {
-                byte[] inputBytes = Encoding.UTF8.GetBytes(Name);
-                byte[] hashBytes = md5.ComputeHash(inputBytes);
+        var requestBody = $@"
+            <speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='{language}'>
+                <voice name='{voiceName}'>{text}</voice>
+            </speak>";
 
-                StringBuilder sb = new StringBuilder();
-                for (int i = 0; i < hashBytes.Length; i++)
-                {
-                    sb.Append(hashBytes[i].ToString("x2"));
-                }
-                return sb.ToString();
-            }
-        }
-
-        public async Task<byte[]> SpeakeNow(string text, string languageName)
-        {
-            try
-            {
-                var speechConfig = SpeechConfig.FromSubscription(_subscriptionKey, _region);
-                speechConfig.SpeechSynthesisVoiceName = languageName;
-                var synthesizer = new Microsoft.CognitiveServices.Speech.SpeechSynthesizer(speechConfig);
-                var result = await synthesizer.SpeakTextAsync(text);
-                if (result.Reason == ResultReason.SynthesizingAudioCompleted)
-                {
-                    return result.AudioData;
-                }
-                else if (result.Reason == ResultReason.Canceled)
-                {
-                    var cancellation = SpeechSynthesisCancellationDetails.FromResult(result);
-                    Console.WriteLine($"CANCELED: Reason={cancellation.Reason}");
-
-                    if (cancellation.Reason == CancellationReason.Error)
-                    {
-                        Console.WriteLine($"CANCELED: ErrorCode={cancellation.ErrorCode}");
-                        Console.WriteLine($"CANCELED: ErrorDetails={cancellation.ErrorDetails}");
-                    }
-                }
-                return null;
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-        }
+        var content = new StringContent(requestBody, Encoding.UTF8, "application/ssml+xml");
+        var response = await _httpClient.PostAsync(url, content);
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadAsByteArrayAsync();
     }
 }

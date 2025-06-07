@@ -1,10 +1,9 @@
 ﻿using Natia.Neurall.Model;
 
-namespace Natia.Neurall.Interfaces
+namespace Natia.Neurall.Interfaces;
+
+public interface INeuralMLPredict
 {
-    public interface INeuralMLPredict
-    {
-        void TrainFromDatabase();
-        Task<NeuralPredictionOutput> Predict(NeuralInput input);
-    }
+    void TrainFromDatabase();
+    Task<NeuralPredictionOutput> Predict(NeuralInput input);
 }

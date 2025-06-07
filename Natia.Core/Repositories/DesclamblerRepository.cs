@@ -11,7 +11,7 @@ namespace Natia.Core.Repositories
         {
         }
 
-        public async Task<Desclamblers> GetDesclamblerInfoById(int id)
+        public async Task<Desclamblers?> GetDesclamblerInfoById(int id)
         {
             return await _mainSet.FirstOrDefaultAsync(io => io.ChanellId == id);
         }

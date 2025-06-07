@@ -3,136 +3,129 @@ using MailKit.Net.Imap;
 using MailKit.Search;
 using Natia.Application.Contracts;
 using Natia.Application.Dtos;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Mail;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Natia.Application.Services
+namespace Natia.Application.Services;
+
+public class ImapService : IImapServices
 {
-    public class ImapService : IImapServices
+
+    public async Task<List<MaillMessageDto>> CheckForNewMessage()
     {
-
-        public async Task<List<MaillMessageDto>> CheckForNewMessage()
+        using (var client = new ImapClient())
         {
-            using (var client = new ImapClient())
+            try
             {
-                try
+                client.ServerCertificateValidationCallback = (s, c, h, e) => true;
+
+                await client.ConnectAsync("imap.gmail.com", 993, true);
+
+                await client.AuthenticateAsync("globaltvmanagment@gmail.com", "zocg vzno fiji jzge");
+
+                var inbox = client.Inbox;
+                await inbox.OpenAsync(MailKit.FolderAccess.ReadWrite);
+
+                var blacklistedSenders = new List<string> { "Google", "Spam Sender", "NoReply", "Admin", "Google Community Team" };
+
+                var unreadIds = await inbox.SearchAsync(SearchQuery.NotSeen);
+                List<MaillMessageDto> mails = new List<MaillMessageDto>();
+
+                foreach (var uniqueId in unreadIds)
                 {
-                    client.ServerCertificateValidationCallback = (s, c, h, e) => true;
+                    var message = await inbox.GetMessageAsync(uniqueId);
 
-                    await client.ConnectAsync("imap.gmail.com", 993, true);
+                    string senderName = message.From.Mailboxes.FirstOrDefault()?.Name??"";
 
-                    await client.AuthenticateAsync("globaltvmanagment@gmail.com", "zocg vzno fiji jzge");
-
-                    var inbox = client.Inbox;
-                    await inbox.OpenAsync(MailKit.FolderAccess.ReadWrite);
-
-                    var blacklistedSenders = new List<string> { "Google", "Spam Sender", "NoReply", "Admin", "Google Community Team" };
-
-                    var unreadIds = await inbox.SearchAsync(SearchQuery.NotSeen);
-                    List<MaillMessageDto> mails = new List<MaillMessageDto>();
-
-                    foreach (var uniqueId in unreadIds)
+                    if (message.Subject.ToLower().Contains("natia") || message.Subject.ToLower().Contains("ნათია"))
                     {
-                        var message = await inbox.GetMessageAsync(uniqueId);
-
-                        string senderName = message.From.Mailboxes.FirstOrDefault()?.Name;
-
-                        if (message.Subject.ToLower().Contains("natia") || message.Subject.ToLower().Contains("ნათია"))
-                        {
-                            continue;
-                        }
-                        if (!string.IsNullOrEmpty(senderName) && blacklistedSenders.Contains(senderName))
-                        {
-                            await inbox.AddFlagsAsync(uniqueId, MessageFlags.Seen, true);
-                            continue;
-                        }
-
-                        mails.Add(new MaillMessageDto
-                        {
-                            Date = message.Date.ToString(),
-                            Body = message.TextBody ?? message.HtmlBody,
-                            Name = senderName,
-                            Subject = message.Subject,
-                        });
-
+                        continue;
+                    }
+                    if (!string.IsNullOrEmpty(senderName) && blacklistedSenders.Contains(senderName))
+                    {
                         await inbox.AddFlagsAsync(uniqueId, MessageFlags.Seen, true);
+                        continue;
                     }
 
-                    await client.DisconnectAsync(true);
+                    mails.Add(new MaillMessageDto
+                    {
+                        Date = message.Date.ToString(),
+                        Body = message.TextBody ?? message.HtmlBody,
+                        Name = senderName,
+                        Subject = message.Subject,
+                    });
 
-                    return mails;
+                    await inbox.AddFlagsAsync(uniqueId, MessageFlags.Seen, true);
                 }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"An error occurred: {ex.Message}");
-                    throw;
-                }
+
+                await client.DisconnectAsync(true);
+
+                return mails;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
+                throw;
             }
         }
+    }
 
 
 
-        public async Task<List<MaillMessageDto>> CheckforReplay()
+    public async Task<List<MaillMessageDto>> CheckforReplay()
+    {
+        using (var client = new ImapClient())
         {
-            using (var client = new ImapClient())
+            try
             {
-                try
+                client.ServerCertificateValidationCallback = (s, c, h, e) => true;
+
+                await client.ConnectAsync("imap.gmail.com", 993, true);
+
+                await client.AuthenticateAsync("globaltvmanagment@gmail.com", "zocg vzno fiji jzge");
+
+                var inbox = client.Inbox;
+                await inbox.OpenAsync(MailKit.FolderAccess.ReadWrite);
+
+                var blacklistedSenders = new List<string> { "Google", "Spam Sender", "NoReply", "Admin", "Google Community Team" };
+
+                var unreadIds = await inbox.SearchAsync(SearchQuery.NotSeen);
+                List<MaillMessageDto> mails = new List<MaillMessageDto>();
+
+                foreach (var uniqueId in unreadIds)
                 {
-                    client.ServerCertificateValidationCallback = (s, c, h, e) => true;
+                    var message = await inbox.GetMessageAsync(uniqueId);
 
-                    await client.ConnectAsync("imap.gmail.com", 993, true);
-
-                    await client.AuthenticateAsync("globaltvmanagment@gmail.com", "zocg vzno fiji jzge");
-
-                    var inbox = client.Inbox;
-                    await inbox.OpenAsync(MailKit.FolderAccess.ReadWrite);
-
-                    var blacklistedSenders = new List<string> { "Google", "Spam Sender", "NoReply", "Admin", "Google Community Team" };
-
-                    var unreadIds = await inbox.SearchAsync(SearchQuery.NotSeen);
-                    List<MaillMessageDto> mails = new List<MaillMessageDto>();
-
-                    foreach (var uniqueId in unreadIds)
+                    string senderName = message.From.Mailboxes.FirstOrDefault()?.Name ?? "";
+                    string mail = message.From.Mailboxes.FirstOrDefault()?.Address ?? "";
+                    if (!message.Subject.ToLower().Contains("natia") && !message.Subject.ToLower().Contains("ნათია"))
                     {
-                        var message = await inbox.GetMessageAsync(uniqueId);
-
-                        string senderName = message.From.Mailboxes.FirstOrDefault()?.Name;
-                        string mail = message.From.Mailboxes.FirstOrDefault()?.Address;
-                        if (!message.Subject.ToLower().Contains("natia") && !message.Subject.ToLower().Contains("ნათია"))
-                        {
-                            continue;
-                        }
-                        if (!string.IsNullOrEmpty(senderName) && blacklistedSenders.Contains(senderName))
-                        {
-                            await inbox.AddFlagsAsync(uniqueId, MessageFlags.Seen, true);
-                            continue;
-                        }
-
-                        mails.Add(new MaillMessageDto
-                        {
-                            Date = message.Date.ToString(),
-                            Body = message.TextBody ?? message.HtmlBody,
-                            Name = senderName,
-                            Subject = message.Subject,
-                            Email = mail,
-                        });
-
+                        continue;
+                    }
+                    if (!string.IsNullOrEmpty(senderName) && blacklistedSenders.Contains(senderName))
+                    {
                         await inbox.AddFlagsAsync(uniqueId, MessageFlags.Seen, true);
+                        continue;
                     }
 
-                    await client.DisconnectAsync(true);
+                    mails.Add(new MaillMessageDto
+                    {
+                        Date = message.Date.ToString(),
+                        Body = message.TextBody ?? message.HtmlBody,
+                        Name = senderName,
+                        Subject = message.Subject,
+                        Email = mail,
+                    });
 
-                    return mails;
+                    await inbox.AddFlagsAsync(uniqueId, MessageFlags.Seen, true);
                 }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"An error occurred: {ex.Message}");
-                    throw;
-                }
+
+                await client.DisconnectAsync(true);
+
+                return mails;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
+                throw;
             }
         }
     }

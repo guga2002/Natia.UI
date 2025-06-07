@@ -1,10 +1,9 @@
 ﻿using Microsoft.ML.Data;
 
-namespace Natia.Neurall.Model
+namespace Natia.Neurall.Model;
+
+public class SolutionRecommendationOutput
 {
-    public class SolutionRecommendationOutput
-    {
-        [ColumnName("PredictedLabel")]
-        public string SuggestedSolution { get; set; }
-    }
+    [ColumnName("PredictedLabel")]
+    public string? SuggestedSolution { get; set; }
 }

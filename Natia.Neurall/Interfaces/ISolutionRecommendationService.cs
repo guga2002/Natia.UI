@@ -1,10 +1,9 @@
 ﻿using Natia.Neurall.Model;
 
-namespace Natia.Neurall.Interfaces
+namespace Natia.Neurall.Interfaces;
+
+public interface ISolutionRecommendationService
 {
-    public interface ISolutionRecommendationService
-    {
-        void TrainModelFromDatabase();
-        SolutionRecommendationOutput Predict(SolutionRecommendationInput input);
-    }
+    void TrainModelFromDatabase();
+    SolutionRecommendationOutput Predict(SolutionRecommendationInput input);
 }
