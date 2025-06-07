@@ -231,24 +231,15 @@ public partial class Main
         {
             if (!File.Exists(filePath))
             {
-                Console.WriteLine($"File not found: {filePath}");
+                Console.WriteLine($"❌ File not found: {filePath}");
                 return;
             }
 
-            string extension = Path.GetExtension(filePath).ToLower();
-            string fileToPlay = filePath;
+            Console.WriteLine($"🎵 Playing: {filePath}");
 
-            if (extension == ".wav")
-            {
-                fileToPlay = Path.ChangeExtension(filePath, ".mp3");
-                ConvertWavToMp3(filePath, fileToPlay);
-            }
-
-            Console.WriteLine($"🎵 Playing: {fileToPlay}");
-
-            using var audioFile = new AudioFileReader(fileToPlay);
+            using var audioReader = new MediaFoundationReader(filePath);
             using var outputDevice = new WaveOutEvent();
-            outputDevice.Init(audioFile);
+            outputDevice.Init(audioReader);
             outputDevice.Play();
 
             while (outputDevice.PlaybackState == PlaybackState.Playing)
@@ -265,6 +256,7 @@ public partial class Main
             Console.WriteLine($"❌ Playback error: {ex?.Message}");
         }
     }
+
     #endregion
 
     #region CheckAndPlayAsync
