@@ -13,6 +13,7 @@ using Natia.Persistance.Model;
 using Natia.Application.Dtos.Keys;
 using Natia.Gateway.Clients;
 using Natia.UI.Models;
+using System.Globalization;
 
 namespace NatiaGuard.BrainStorm.Main;
 
@@ -146,37 +147,12 @@ public partial class Main
                         Console.WriteLine("damutebulia");
                         defaultDevice.AudioEndpointVolume.Mute = false;
                         defaultDevice.AudioEndpointVolume.MasterVolumeLevelScalar = 0.80f;
-                        using (var audioFile = new AudioFileReader($@"\\192.168.1.102\ShearedFolders\musics\mute.mp3"))
-                        using (var outputDevice = new WaveOutEvent())
-                        {
-                            outputDevice.Init(audioFile);
-                            outputDevice.Play();
 
-                            while (outputDevice.PlaybackState == PlaybackState.Playing)
-                            {
-                                Thread.Sleep(100);
-                            }
-                        }
+                        await PlayAudio(@"192.168.1.102\\ShearedFolders\\musics\\mute.mp3");
 
                         counttotalchange++;
+                        await PlayAudio(@"\\192.168.1.102\ShearedFolders\musics\angry.mp3");
 
-                        Thread th1 = new Thread(new ThreadStart(
-                            () =>
-                            {
-                                using (var audioFile = new AudioFileReader(@"\\192.168.1.102\ShearedFolders\musics\angry.mp3"))
-                                using (var outputDevice = new WaveOutEvent())
-                                {
-                                    outputDevice.Init(audioFile);
-                                    outputDevice.Play();
-
-                                    while (outputDevice.PlaybackState == PlaybackState.Playing)
-                                    {
-                                        Thread.Sleep(100);
-                                    }
-                                }
-
-                            }));
-                        th1.Start();
                     }
 
                     countsayelse = 0;
@@ -186,33 +162,11 @@ public partial class Main
                         if (index > 50)
                         {
 
-                            using (var audioFile = new AudioFileReader($@"\\192.168.1.102\ShearedFolders\musics\IntroDgisRejimi.mp3"))
-                            using (var outputDevice = new WaveOutEvent())
-                            {
-                                outputDevice.Init(audioFile);
-                                outputDevice.Play();
-
-                                while (outputDevice.PlaybackState == PlaybackState.Playing)
-                                {
-                                    Thread.Sleep(100);
-                                }
-                                await PlayAudioAndSave(await _makeSound.SpeakNow(await checkweather(), -1), await checkweather(), await checkweather());
-                            }
+                            await PlayAudio($@"\\192.168.1.102\ShearedFolders\musics\IntroDgisRejimi.mp3");
                         }
                         else if (index > 30)
                         {
-                            using (var audioFile = new AudioFileReader($@"\\192.168.1.102\ShearedFolders\musics\DgisRejim.mp3"))
-                            using (var outputDevice = new WaveOutEvent())
-                            {
-                                outputDevice.Init(audioFile);
-                                outputDevice.Play();
-
-                                while (outputDevice.PlaybackState == PlaybackState.Playing)
-                                {
-                                    Thread.Sleep(100);
-                                }
-                                await PlayAudioAndSave(await _makeSound.SpeakNow(await checkweather(), -1), await checkweather(), await checkweather());
-                            }
+                            await PlayAudio($@"\\192.168.1.102\ShearedFolders\musics\DgisRejim.mp3");
                         }
                         else
                         {
@@ -234,17 +188,7 @@ public partial class Main
                         counttotalchange++;
                         if (count >= 3)
                         {
-                            using (var audioFile = new AudioFileReader($@"\\192.168.1.102\ShearedFolders\musics\sayveduri.mp3"))
-                            using (var outputDevice = new WaveOutEvent())
-                            {
-                                outputDevice.Init(audioFile);
-                                outputDevice.Play();
-
-                                while (outputDevice.PlaybackState == PlaybackState.Playing)
-                                {
-                                    Thread.Sleep(100);
-                                }
-                            }
+                            await PlayAudio($@"\\192.168.1.102\ShearedFolders\musics\sayveduri.mp3");
                             await CheckAndPlayAsync(new CheckAndPlayModel
                             {
                                 WhatNatiaSaid = "მე საშინლად გაბრაზებული ვარ,  რომ არ ითვალისწინებ ჩემს თხოვნას. უკვე სამჯერ დაუწიე ხმას , გთხოვ სამუშაო საათებში ნუ დაუწევ ხმას.",
@@ -263,18 +207,7 @@ public partial class Main
                     if (countsayelse == 0 || level >= 50 || level <= 20)
                     {
                         counttotalchange = 0;
-                        using (var audioFile = new AudioFileReader($@"\\192.168.1.102\ShearedFolders\musics\game.mp3"))
-                        using (var outputDevice = new WaveOutEvent())
-                        {
-                            outputDevice.Init(audioFile);
-                            outputDevice.Play();
-
-                            while (outputDevice.PlaybackState == PlaybackState.Playing)
-                            {
-                                Thread.Sleep(100);
-                            }
-                        }
-
+                        await PlayAudio($@"\\192.168.1.102\ShearedFolders\musics\game.mp3");
                         var sessionManager = new MMDeviceEnumerator().EnumerateAudioEndPoints(DataFlow.Render, DeviceState.Active);
                         foreach (var device in sessionManager)
                         {
@@ -348,33 +281,14 @@ $"პროცესორზე მაღალი დატვირთვა�
                         else
                         {
 
-                            using (var audioFile = new AudioFileReader($@"\\192.168.1.102\ShearedFolders\musics\procesori.mp3"))
-                            using (var outputDevice = new WaveOutEvent())
-                            {
-                                outputDevice.Init(audioFile);
-                                outputDevice.Play();
-
-                                while (outputDevice.PlaybackState == PlaybackState.Playing)
-                                {
-                                    Thread.Sleep(100);
-                                }
-                            }
+                            await PlayAudio($@"\\192.168.1.102\ShearedFolders\musics\procesori.mp3");
                         }
                         //makeSound.SpeakNow("პროცესორზე  არის დიდი  დატვირთვა, გთხოვთ გამორთეთ  არასაჭირო პროგრამები , და  ჩახურეთ  გუგლის ბრაუზერი. ნათია წინასწარ გიხდით მადლობას.",-4);
                     }
                     if (performance.Ram >= 96)
                     {
-                        using (var audioFile = new AudioFileReader($@"\\192.168.1.102\ShearedFolders\musics\Operatiuli.mp3"))
-                        using (var outputDevice = new WaveOutEvent())
-                        {
-                            outputDevice.Init(audioFile);
-                            outputDevice.Play();
-
-                            while (outputDevice.PlaybackState == PlaybackState.Playing)
-                            {
-                                Thread.Sleep(100);
-                            }
-                        }
+                        await PlayAudio($@"\\192.168.1.102\ShearedFolders\musics\Operatiuli.mp3");
+                       
                         //  makeSound.SpeakNow($"ერთი თხოვნა მაქვს... ოპერატიული მეხსიერება,რამი, ძალიან სუსტია, პროცესორი იყენებს {(int)percent} პროცენტს. ყოველივე ეს მიქმნის დისკომფორტს. გთხოვთ იქნებ შეატყობინოთ შესაბამის პირს.," +
                         // "ეს ჩემთვის, სასიცოცხლოდ მნიშვნელოვანია. ნათია ბოდიშს გიხდით, შეწუხებისთვის.", -4);
                     }
@@ -383,8 +297,8 @@ $"პროცესორზე მაღალი დატვირთვა�
                     {
 
                         var temp = await _temperature.GetCurrentData();
-                        var temperat = double.Parse(temp.Item1);
-                        var humidity = double.Parse(temp.Item2);
+                        var temperat = double.Parse(temp.Item1.Trim(), CultureInfo.InvariantCulture);
+                        var humidity = double.Parse(temp.Item2.Trim(), CultureInfo.InvariantCulture);
                         if (temperat >= 23 && temperat <= 25)
                         {
                             var play = new CheckAndPlayModel
@@ -433,17 +347,7 @@ $"პროცესორზე მაღალი დატვირთვა�
                                 SuggestedSolution = "გადაამოწმე სადგური",
                             });
 
-                            using (var audioFile = new AudioFileReader($@"\\192.168.1.102\ShearedFolders\musics\Alert.mp3"))
-                            using (var outputDevice = new WaveOutEvent())
-                            {
-                                outputDevice.Init(audioFile);
-                                outputDevice.Play();
-
-                                while (outputDevice.PlaybackState == PlaybackState.Playing)
-                                {
-                                    Thread.Sleep(100);
-                                }
-                            }
+                            await PlayAudio($@"\\192.168.1.102\ShearedFolders\musics\Alert.mp3");                  
                         }
                         else
                         {
@@ -524,22 +428,22 @@ $"პროცესორზე მაღალი დატვირთვა�
                 }
 
 
-                try
-                {
-                    var data = await _natiaClient.GetTextToSentInMail();
-                    if(!string.IsNullOrEmpty(data)||data.Length>10)
-                    {
-                        foreach (var item in _mailsTOSent.ToList())
-                        {
-                           await _smtpClientRepository.SendMessage(data, item, $"რეგიონების რეპორტი:{DateTime.Now}");
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    var red = _smtpClientRepository.BuildHtmlMessage(ex.Message, ex?.StackTrace ?? "");
-                    await _smtpClientRepository.SendMessage(red);
-                }
+                //try
+                //{
+                //    var data = await _natiaClient.GetTextToSentInMail();
+                //    if(!string.IsNullOrEmpty(data)||data.Length>10)
+                //    {
+                //        foreach (var item in _mailsTOSent.ToList())
+                //        {
+                //           await _smtpClientRepository.SendMessage(data, item, $"რეგიონების რეპორტი:{DateTime.Now}");
+                //        }
+                //    }
+                //}
+                //catch (Exception ex)
+                //{
+                //    var red = _smtpClientRepository.BuildHtmlMessage(ex.Message, ex?.StackTrace ?? "");
+                //    await _smtpClientRepository.SendMessage(red);
+                //}
 
 
 
@@ -623,18 +527,8 @@ $"ყურადღება! სისტემა გამოვიდა �
 
                     await CheckAndPlayAsync(yvela);
 
-                    using (var audioFile = new AudioFileReader($@"\\192.168.1.102\ShearedFolders\musics\Alert.mp3"))
-                    using (var outputDevice = new WaveOutEvent())
-                    {
-                        outputDevice.Init(audioFile);
-                        outputDevice.Play();
-
-                        while (outputDevice.PlaybackState == PlaybackState.Playing)
-                        {
-                            Thread.Sleep(100);
-                        }
-                    }
-
+                    await PlayAudio($@"\\192.168.1.102\ShearedFolders\musics\Alert.mp3");
+                   
                     var Solu = Solution(yvela);
                     var predict = await Predict(yvela);
                     float confidenceThreshold = yvela.Priority == Priority.კრიტიკული ? 0.7f : 0.5f;
@@ -654,31 +548,11 @@ $"ყურადღება! სისტემა გამოვიდა �
                     {
                         if (rnd.Next(34, 4566) % 2 == 1)
                         {
-                            using (var audioFile = new AudioFileReader($@"\\192.168.1.102\ShearedFolders\musics\Shetyobineba.mp3"))
-                            using (var outputDevice = new WaveOutEvent())
-                            {
-                                outputDevice.Init(audioFile);
-                                outputDevice.Play();
-
-                                while (outputDevice.PlaybackState == PlaybackState.Playing)
-                                {
-                                    System.Threading.Thread.Sleep(100);
-                                }
-                            }
+                            await PlayAudio($@"\\192.168.1.102\ShearedFolders\musics\Shetyobineba.mp3");
                         }
                         else
                         {
-                            using (var audioFile = new AudioFileReader($@"\\192.168.1.102\ShearedFolders\musics\axali.mp3"))
-                            using (var outputDevice = new WaveOutEvent())
-                            {
-                                outputDevice.Init(audioFile);
-                                outputDevice.Play();
-
-                                while (outputDevice.PlaybackState == PlaybackState.Playing)
-                                {
-                                    System.Threading.Thread.Sleep(100);
-                                }
-                            }
+                            await PlayAudio($@"\\192.168.1.102\ShearedFolders\musics\axali.mp3");
                         }
                     }
 
@@ -701,21 +575,7 @@ $"ყურადღება! სისტემა გამოვიდა �
                                     await PlayAudioAndSave(await _makeSound.SpeakNow("ავიმაღლოთ განწყობა.", 0), "ganwyoba", "ავიმაღლოთ განწყობა");
 
                                     defaultDevice.AudioEndpointVolume.MasterVolumeLevelScalar = 0.9f;
-                                    using (var audioFile = new AudioFileReader($@"\\192.168.1.102\ShearedFolders\musics\{random.Next(100, 1456) % 30 + 1}.mp3"))
-                                    using (var outputDevice = new WaveOutEvent())
-                                    {
-                                        outputDevice.Init(audioFile);
-                                        outputDevice.Play();
-                                        var time = DateTime.Now.Minute;
-                                        var secondtime = DateTime.Now.Minute;
-                                        while (secondtime - time < 1)
-                                        {
-                                            outputDevice.Play();
-                                            secondtime = DateTime.Now.Minute;
-                                            Thread.Sleep(100);
-                                        }
-                                        outputDevice.Stop();
-                                    }
+                                    await PlayAudio($@"\\192.168.1.102\ShearedFolders\musics\{random.Next(100, 1456) % 30 + 1}.mp3");
                                     await PlayAudioAndSave(await _makeSound.SpeakNow(await checkweather(), -1), say, await checkweather());
                                     defaultDevice.AudioEndpointVolume.MasterVolumeLevelScalar = 0.95f;
                                 }
@@ -728,22 +588,7 @@ $"ყურადღება! სისტემა გამოვიდა �
 
                                     Random random = new Random();
                                     defaultDevice.AudioEndpointVolume.MasterVolumeLevelScalar = 0.9f;
-                                    using (var audioFile = new AudioFileReader($@"\\192.168.1.102\ShearedFolders\musics\{random.Next(100, 1456) % 30 + 1}.mp3"))
-                                    using (var outputDevice = new WaveOutEvent())
-                                    {
-                                        outputDevice.Init(audioFile);
-                                        outputDevice.Play();
-
-                                        var time = DateTime.Now.Minute;
-                                        var secondtime = DateTime.Now.Minute;
-                                        while (secondtime - time < 1)
-                                        {
-                                            outputDevice.Play();
-                                            secondtime = DateTime.Now.Minute;
-                                            Thread.Sleep(100);
-                                        }
-                                        outputDevice.Stop();
-                                    }
+                                    await PlayAudio($@"\\192.168.1.102\ShearedFolders\musics\{random.Next(100, 1456) % 30 + 1}.mp3");                                
 
                                     await PlayAudioAndSave(await _makeSound.SpeakNow(await checkweather(), -1), say, await checkweather());
                                     defaultDevice.AudioEndpointVolume.MasterVolumeLevelScalar = 0.95f;
@@ -757,22 +602,8 @@ $"ყურადღება! სისტემა გამოვიდა �
 
                                     Random random = new Random();
                                     defaultDevice.AudioEndpointVolume.MasterVolumeLevelScalar = 0.95f;
-                                    using (var audioFile = new AudioFileReader($@"\\192.168.1.102\ShearedFolders\musics\{random.Next(100, 1496) % 30 + 1}.mp3"))
-                                    using (var outputDevice = new WaveOutEvent())
-                                    {
-                                        outputDevice.Init(audioFile);
-                                        outputDevice.Play();
-                                        var time = DateTime.Now.Minute;
-                                        var secondtime = DateTime.Now.Minute;
-                                        while (secondtime - time < 1)
-                                        {
-                                            outputDevice.Play();
-                                            secondtime = DateTime.Now.Minute;
-                                            Thread.Sleep(100);
-                                        }
-                                        outputDevice.Stop();
-                                    }
-
+                                    await PlayAudio($@"\\192.168.1.102\ShearedFolders\musics\{random.Next(100, 1496) % 30 + 1}.mp3");
+                                    
                                     await PlayAudioAndSave(await _makeSound.SpeakNow(await checkweather(), -1), await checkweather(), await checkweather());
                                     defaultDevice.AudioEndpointVolume.MasterVolumeLevelScalar = 0.40f;
                                 }
@@ -785,22 +616,7 @@ $"ყურადღება! სისტემა გამოვიდა �
 
                                     Random random = new Random();
                                     defaultDevice.AudioEndpointVolume.MasterVolumeLevelScalar = 0.5f;
-                                    using (var audioFile = new AudioFileReader($@"\\192.168.1.102\ShearedFolders\musics\{random.Next(100, 1456) % 30 + 1}.mp3"))
-                                    using (var outputDevice = new WaveOutEvent())
-                                    {
-
-                                        outputDevice.Init(audioFile);
-                                        outputDevice.Play();
-                                        var time = DateTime.Now.Minute;
-                                        var secondtime = DateTime.Now.Minute;
-                                        while (secondtime - time < 2)
-                                        {
-                                            outputDevice.Play();
-                                            secondtime = DateTime.Now.Minute;
-                                            Thread.Sleep(100);
-                                        }
-                                        outputDevice.Stop();
-                                    }
+                                    await PlayAudio($@"\\192.168.1.102\ShearedFolders\musics\{random.Next(100, 1456) % 30 + 1}.mp3");                                   
                                     await PlayAudioAndSave(await _makeSound.SpeakNow(await checkweather(), -1), await checkweather(), await checkweather());
                                     defaultDevice.AudioEndpointVolume.MasterVolumeLevelScalar = 0.95f;
                                 }
@@ -1206,50 +1022,17 @@ $"ყურადღება! სისტემა გამოვიდა �
         {
             defaultDevice.AudioEndpointVolume.Mute = false;
             defaultDevice.AudioEndpointVolume.MasterVolumeLevelScalar = 1f;
-            using (var audioFile = new AudioFileReader($@"\\192.168.1.102\ShearedFolders\musics\mute.mp3"))
-            using (var outputDevice = new WaveOutEvent())
-            {
-                outputDevice.Init(audioFile);
-                outputDevice.Play();
+            await PlayAudio($@"\\192.168.1.102\ShearedFolders\musics\mute.mp3");
 
-                while (outputDevice.PlaybackState == PlaybackState.Playing)
-                {
-                    Thread.Sleep(100);
-                }
-            }
-
-            using (var audioFile = new AudioFileReader(@"\\192.168.1.102\ShearedFolders\musics\angry.mp3"))
-            using (var outputDevice = new WaveOutEvent())
-            {
-                outputDevice.Init(audioFile);
-                outputDevice.Play();
-
-                while (outputDevice.PlaybackState == PlaybackState.Playing)
-                {
-                    Thread.Sleep(100);
-                }
-            }
+            await PlayAudio(@"\\192.168.1.102\ShearedFolders\musics\angry.mp3");
+           
             await PlayAudioAndSave(await _makeSound.SpeakNow("საშინლად გაბრაზებული ვარ. მჭირდება რელაქსაცია."), "Relaqsacia", "საშინლად გაბრაზებული ვარ. მჭირდება რელაქსაცია.");
 
             Random random = new Random();
 
-            using (var audioFile = new AudioFileReader($@"\\192.168.1.102\ShearedFolders\musics\{random.Next(0, 31)}.mp3"))
-            using (var outputDevice = new WaveOutEvent())
-            {
-                outputDevice.Init(audioFile);
-                outputDevice.Play();
-                var time = DateTime.Now.Minute;
-                var secondtime = DateTime.Now.Minute;
-                while (secondtime - time < 1)
-                {
-                    outputDevice.Play();
-                    secondtime = DateTime.Now.Minute;
-                    Console.WriteLine("movidaaa");
-                    Thread.Sleep(100);
-                }
-                outputDevice.Stop();
-            }
+            await PlayAudio($@"\\192.168.1.102\ShearedFolders\musics\{random.Next(0, 31)}.mp3");
         }
+
         var chan = await _channels.GetChanellByPort(port);
         if (chan is null) return;
         int chanellid = chan.Id;
@@ -1336,16 +1119,7 @@ $"ყურადღება! სისტემა გამოვიდა �
 
                 await CheckAndPlayAsync(res, "JeocellOptic");
 
-                using (var audioFile1 = new AudioFileReader(@"\\192.168.1.102\ShearedFolders\musics\Alert.mp3"))
-                using (var outputDevice1 = new WaveOutEvent())
-                {
-                    outputDevice1.Init(audioFile1);
-                    outputDevice1.Play();
-                    while (outputDevice1.PlaybackState == PlaybackState.Playing)
-                    {
-                        Thread.Sleep(100);
-                    }
-                }
+                await PlayAudio(@"\\192.168.1.102\ShearedFolders\musics\Alert.mp3");
                 var Solu = Solution(res);
                 var predict = await Predict(res);
                 float confidenceThreshold = res.Priority == Priority.კრიტიკული ? 0.7f : 0.5f;
@@ -1374,17 +1148,8 @@ $"ყურადღება! სისტემა გამოვიდა �
 
                 await CheckAndPlayAsync(res, "MainOptic");
 
-                using (var audioFile1 = new AudioFileReader(@"\\192.168.1.102\ShearedFolders\musics\Alert.mp3"))
-                using (var outputDevice1 = new WaveOutEvent())
-                {
-                    outputDevice1.Init(audioFile1);
-                    outputDevice1.Play();
-                    while (outputDevice1.PlaybackState == PlaybackState.Playing)
-                    {
-                        Thread.Sleep(100);
-                    }
-                }
-
+                await PlayAudio(@"\\192.168.1.102\ShearedFolders\musics\Alert.mp3");
+               
                 var Solu = Solution(res);
                 var predict = await Predict(res);
                 float confidenceThreshold = res.Priority == Priority.კრიტიკული ? 0.7f : 0.5f;
@@ -1643,7 +1408,6 @@ $"{CorrectNameI(chan?.NameForSpeake??"")} არ მაუწყებლობ�
                                     //var req = await _allInOne.GetRecieverInfoByChanellId(chan.Id);
 
                                     await PlayAudioAndSave(await _makeSound.SpeakNow("არხი არის ემპეგე ორი ფორმატის, და მოდის თანამგზავრიდან, შეეცადე ჩართო სხვა წყაროდან.თუ არის შესაძლებელი"), "EMPG2", "არხი არის ემპეგე ორი ფორმატის, და მოდის თანამგზავრიდან, შეეცადე ჩართო სხვა წყაროდან.თუ არის შესაძლებელი");
-
                                     break;
                                 }
                             case 140:

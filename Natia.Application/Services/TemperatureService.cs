@@ -1,33 +1,44 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Natia.Application.Contracts;
+using System.Text.Json;
 
 namespace Natia.Application.Services;
 
 public class TemperatureService : ITempperatureService
 {
-    private readonly HttpClient client;
-    private readonly IConfiguration _config;
-    public TemperatureService(HttpClient client, IConfiguration config)
-    {
-        this.client = client;
-        _config = config;
-    }
 
+    private const string serverUrl = "https://192.168.0.79:2000";
 
     public async Task<(string, string)> GetCurrentData()
     {
         try
         {
-            var response = await client.GetAsync($"http://192.168.100.104:8080/monitoring");
+            var handler = new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = (message, cert, chain, sslPolicyErrors) => true
+            };
+            var client = new HttpClient(handler);
+
+            var response = await client.GetAsync($"{serverUrl}/api/Temprature/GetCurrentTemperature");
             response.EnsureSuccessStatusCode();
             var responseData = await response.Content.ReadAsStringAsync();
-            var res = responseData.Split(new string[] { "<div id=\"temperature\" class=\"temperature\">", "°C</div>" }, StringSplitOptions.None)[1];
-            var Humidity = responseData.Split(new string[] { "<div class=\"humidity\">", "%</div>" }, StringSplitOptions.None)[1];
-            return (res, Humidity);
+
+            var res = JsonSerializer.Deserialize<TemperatureModel>(responseData);
+            if (res == null)
+            {
+                return ("0.0", "0.0");
+            }
+            return (res.temperature,res.humidity);
         }
-        catch
+        catch (Exception ex)
         {
-            return ("შეცდომა ტემპერატურის წამოღებისას", "");
+            return ("0.0", "0.0");
         }
+    }
+
+    public class TemperatureModel
+    {
+        public string? humidity { get; set; }
+        public string? temperature { get; set; }
     }
 }
