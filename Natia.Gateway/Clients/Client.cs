@@ -10,27 +10,7 @@ using Newtonsoft.Json;
 
 public partial class Client
 {
-    private readonly string _baseUrl;
-    private readonly HttpClient _httpClient;
-    private readonly JsonSerializerSettings _jsonSettings;
-
-    public Client(string baseUrl, HttpClient httpClient)
-    {
-        if (string.IsNullOrEmpty(baseUrl))
-            throw new ArgumentNullException(nameof(baseUrl));
-        if (httpClient == null)
-            throw new ArgumentNullException(nameof(httpClient));
-
-        _baseUrl = baseUrl.EndsWith("/") ? baseUrl : baseUrl + "/";
-        _httpClient = httpClient;
-        _jsonSettings = new JsonSerializerSettings();
-
-        UpdateJsonSerializerSettings(_jsonSettings);
-    }
-
-    partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings);
-
-
+   
     public async Task<string> GetSystemHealth()
     {
         var handler = new HttpClientHandler
@@ -38,11 +18,11 @@ public partial class Client
             ServerCertificateCustomValidationCallback = (message, cert, chain, sslPolicyErrors) => true
         };
         var client = new HttpClient(handler);
-        var requestUrl = "https://192.168.1.102:3999/api/CheckHealth/CheckSystemHealth";
+        var requestUrl = "https://192.168.1.102:3999/api/CheckHealth/health";
 
         var res = await client.GetAsync(requestUrl);
 
-        if (res.IsSuccessStatusCode)
+        if (res.IsSuccessStatusCode&& res.StatusCode!=System.Net.HttpStatusCode.NoContent)
         {
             var resultString = await res.Content.ReadAsStringAsync();
 
@@ -65,7 +45,7 @@ public partial class Client
 
         var res = await client.GetAsync(requestUrl);
 
-        if (res.IsSuccessStatusCode)
+        if (res.IsSuccessStatusCode&&res.StatusCode!=System.Net.HttpStatusCode.NoContent)
         {
             var resultString = await res.Content.ReadAsStringAsync();
 
@@ -244,7 +224,7 @@ public partial class Client
                 ServerCertificateCustomValidationCallback = (message, cert, chain, sslPolicyErrors) => true
             };
             var client = new HttpClient(handler);
-            var requestUrl = "https://192.168.1.102:3999/api/RegionChecker/GetRegionData";
+            var requestUrl = "https://192.168.1.102:3999/api/RegionData";
 
             var res = await client.GetAsync(requestUrl);
 

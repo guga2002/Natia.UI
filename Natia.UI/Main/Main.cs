@@ -92,7 +92,7 @@ public partial class Main
         _reciever = reciever ?? throw new ArgumentNullException(nameof(reciever));
         _temperature = temperature ?? throw new ArgumentNullException(nameof(temperature));
         _httpClient = httpClient;
-        _natiaClient = new Client("https://192.168.1.102:3999/", new HttpClient());
+        _natiaClient = new Client();
         _smtpClientRepository = _client;
         this.neuralRepository = neuralRepository;
         _Recomendation = recomendation;
