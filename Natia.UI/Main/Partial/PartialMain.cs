@@ -237,21 +237,43 @@ namespace NatiaGuard.BrainStorm.Main
         {
             try
             {
-                using (var audioFile = new AudioFileReader(filePath))
-                using (var outputDevice = new WaveOutEvent())
-                {
-                    outputDevice.Init(audioFile);
-                    outputDevice.Play();
+                byte[] audioBytes = await File.ReadAllBytesAsync(filePath);
 
-                    while (outputDevice.PlaybackState == PlaybackState.Playing)
-                    {
-                        Thread.Sleep(100);
-                    }
+                var content = new ByteArrayContent(audioBytes);
+                content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/octet-stream");
+
+                var handler = new HttpClientHandler
+                {
+                    ServerCertificateCustomValidationCallback = (message, cert, chain, sslPolicyErrors) => true
+                };
+                var client = new HttpClient(handler);
+
+                var response = await client.PostAsync("https://192.168.1.102:3999/api/audiostreamer/push", content);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    Console.WriteLine($"❌ Failed to push audio to API: {response.StatusCode}");
                 }
+                else
+                {
+                    Console.WriteLine("✅ Audio pushed to frontend via SignalR.");
+                }
+
+                //using (var audioFile = new AudioFileReader(filePath))
+                //using (var outputDevice = new WaveOutEvent())
+                //{
+                //    outputDevice.Init(audioFile);
+                //    outputDevice.Play();
+
+                //    while (outputDevice.PlaybackState == PlaybackState.Playing)
+                //    {
+                //        Thread.Sleep(100);
+                //    }
+                //}
             }
             catch (Exception ex)
             {
-                var res = _smtpClientRepository.BuildHtmlMessage(ex.Message, ex?.StackTrace??"");
+                var res = _smtpClientRepository.BuildHtmlMessage(ex.Message, ex?.StackTrace ?? "");
                 await _smtpClientRepository.SendMessage(res);
                 Console.WriteLine($"An error occurred during audio playback: {ex?.Message}");
             }
@@ -478,18 +500,25 @@ namespace NatiaGuard.BrainStorm.Main
         {
             if (string.IsNullOrWhiteSpace(input))
                 return string.Empty;
+            try
+            {
+                input = input.Normalize(NormalizationForm.FormC);
 
-            using var sha256 = SHA256.Create();
-            byte[] hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(input));
-
-            string base64 = Convert.ToBase64String(hashBytes)
-                .Replace('+', '-')
-                .Replace('/', '_')
-                .TrimEnd('=');
-
-            return base64;
+                using var sha256 = SHA256.Create();
+                var inputBytes = Encoding.UTF8.GetBytes(input);
+                var hashBytes = sha256.ComputeHash(inputBytes);
+               string safeBase64 = Convert.ToBase64String(hashBytes)
+                    .Replace('+', '-')
+                    .Replace('/', '_')
+                    .Replace("=", "");
+                return safeBase64;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Hashing failed: {ex.Message}");
+                return $"hashfail_{Guid.NewGuid():N}";
+            }
         }
-
         #endregion
 
     }

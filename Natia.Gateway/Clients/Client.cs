@@ -38,7 +38,7 @@ public partial class Client
             ServerCertificateCustomValidationCallback = (message, cert, chain, sslPolicyErrors) => true
         };
         var client = new HttpClient(handler);
-        var requestUrl = "https://192.168.1.102:2024/api/CheckHealth/CheckSystemHealth";
+        var requestUrl = "https://192.168.1.102:3999/api/CheckHealth/CheckSystemHealth";
 
         var res = await client.GetAsync(requestUrl);
 
@@ -61,7 +61,7 @@ public partial class Client
             ServerCertificateCustomValidationCallback = (message, cert, chain, sslPolicyErrors) => true
         };
         var client = new HttpClient(handler);
-        var requestUrl = "https://192.168.1.102:2024/api/CheckAnommaliesOverSystem/CheckForAnomalies";
+        var requestUrl = "https://192.168.1.102:3999/api/CheckAnommaliesOverSystem/CheckForAnomalies";
 
         var res = await client.GetAsync(requestUrl);
 
@@ -87,7 +87,7 @@ public partial class Client
                 ServerCertificateCustomValidationCallback = (message, cert, chain, sslPolicyErrors) => true
             };
             var client = new HttpClient(handler);
-            var requestUrl = "https://192.168.1.102:2024/api/NatiaCore/info";
+            var requestUrl = "https://192.168.1.102:3999/api/NatiaCore/info";
 
             var res = await client.GetAsync(requestUrl);
 
@@ -121,7 +121,7 @@ public partial class Client
                 ServerCertificateCustomValidationCallback = (message, cert, chain, sslPolicyErrors) => true
             };
             var client = new HttpClient(handler);
-            var requestUrl = "https://192.168.1.102:2024/api/NatiaCore/GetAnniversaryDates";
+            var requestUrl = "https://192.168.1.102:3999/api/NatiaCore/GetAnniversaryDates";
 
             var res = await client.GetAsync(requestUrl);
 
@@ -152,7 +152,7 @@ public partial class Client
                 ServerCertificateCustomValidationCallback = (message, cert, chain, sslPolicyErrors) => true
             };
             var client = new HttpClient(handler);
-            var requestUrl = $@"http://192.168.0.79:3395/api/Robot/start?sentence={sityva}";
+            var requestUrl = $@"https://192.168.1.102:3999/Robot/start?sentence={sityva}";
 
             var res = await client.GetAsync(requestUrl);
 
@@ -212,7 +212,7 @@ public partial class Client
                 ServerCertificateCustomValidationCallback = (message, cert, chain, sslPolicyErrors) => true
             };
             var client = new HttpClient(handler);
-            var requestUrl = "https://192.168.1.102:2024/api/Descrambler/CardsThatNeedToBeActivated";
+            var requestUrl = "https://192.168.1.102:3999/api/Descrambler/CardsThatNeedToBeActivated";
 
             var res = await client.GetAsync(requestUrl);
 
@@ -244,7 +244,7 @@ public partial class Client
                 ServerCertificateCustomValidationCallback = (message, cert, chain, sslPolicyErrors) => true
             };
             var client = new HttpClient(handler);
-            var requestUrl = "https://192.168.1.102:2024/api/RegionChecker/GetRegionData";
+            var requestUrl = "https://192.168.1.102:3999/api/RegionChecker/GetRegionData";
 
             var res = await client.GetAsync(requestUrl);
 
@@ -272,21 +272,22 @@ public partial class Client
     {
         try
         {
-            var requestUrl = "http://192.168.0.79:3395/api/controll/heartbeat/true";
+            //var requestUrl = "http://192.168.1.102:3999/api/controll/heartbeat/true";
 
-            var res = await _httpClient.GetAsync(requestUrl);
+            //var res = await _httpClient.GetAsync(requestUrl);
 
-            if (res.IsSuccessStatusCode)
-            {
-                var resultString = await res.Content.ReadAsStringAsync();
+            //if (res.IsSuccessStatusCode)
+            //{
+            //    var resultString = await res.Content.ReadAsStringAsync();
 
-                var result = JsonConvert.DeserializeObject<DateTime>(resultString);
-                return result;
-            }
-            else
-            {
-                return DateTime.MinValue;
-            }
+            //    var result = JsonConvert.DeserializeObject<DateTime>(resultString);
+            //    return result;
+            //}
+            //else
+            //{
+            //    return DateTime.MinValue;
+            //}
+            return DateTime.Now;
         }
         catch (Exception exp)
         {
