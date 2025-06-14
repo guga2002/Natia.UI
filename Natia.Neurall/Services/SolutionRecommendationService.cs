@@ -11,6 +11,8 @@ public class SolutionRecommendationService : ISolutionRecommendationService
     private readonly MLContext _mlContext;
     private ITransformer? _model;
     private readonly SpeakerDbContext _context;
+    private const string ModelPath = "SolutionRecommendationModel.zip";
+
 
     public SolutionRecommendationService(SpeakerDbContext context)
     {
@@ -21,16 +23,15 @@ public class SolutionRecommendationService : ISolutionRecommendationService
     public void TrainModelFromDatabase()
     {
         var currentTime = DateTime.Now;
-        var modelPath = "SolutionRecommendationModel.zip";
 
-        if (!File.Exists(modelPath))
+        if (!File.Exists(ModelPath))
         {
             Console.WriteLine("Model file not found. Training model...");
             RetrainModel();
         }
         else
         {
-            var lastTrainedTime = File.GetLastWriteTime(modelPath);
+            var lastTrainedTime = File.GetLastWriteTime(ModelPath);
 
             if ((currentTime - lastTrainedTime).TotalHours >= 24)
             {
@@ -89,24 +90,8 @@ public class SolutionRecommendationService : ISolutionRecommendationService
                 SuggestedSolution = io.SuggestedSolution
             });
 
-            //     var dat = new[]
-            //{
-            //     new SolutionRecommendationInput
-            //     {
-            //         ErrorMessage = "Timeout",
-            //         ErrorDetails = "Network failure in region X.",
-            //         ChannelName = "Support",
-            //         Satellite = "GeoSat1",
-            //         Priority = "High",
-            //         SuggestedSolution = "Restart satellite link"
-            //     }
-            // Add more samples as needed
-            //};
-
-
             var trainingData = _mlContext.Data.LoadFromEnumerable(data);
 
-            // Define the optimized pipeline
             var pipeline = _mlContext.Transforms.Text.FeaturizeText(
                     outputColumnName: "TextFeatures",
                     inputColumnName: nameof(SolutionRecommendationInput.ErrorDetails))
@@ -130,33 +115,27 @@ public class SolutionRecommendationService : ISolutionRecommendationService
                 .Append(_mlContext.MulticlassClassification.Trainers.SdcaNonCalibrated(
                     new SdcaNonCalibratedMulticlassTrainer.Options
                     {
-                        MaximumNumberOfIterations = 50 // Reduce iterations for faster training
+                        MaximumNumberOfIterations = 50
                     }))
                 .Append(_mlContext.Transforms.Conversion.MapKeyToValue(
                     outputColumnName: "PredictedLabel"));
 
-            // Measure training time
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
 
-            // Train the model
             Console.WriteLine("Training the model...");
             _model = pipeline.Fit(trainingData);
 
             stopwatch.Stop();
             Console.WriteLine($"Training completed in {stopwatch.ElapsedMilliseconds / 1000.0} seconds");
 
-            // Save the trained model
-            string modelPat = "SolutionRecommendationModel.zip";
             Console.WriteLine("Saving trained model...");
-            _mlContext.Model.Save(_model, trainingData.Schema, modelPat);
-            Console.WriteLine($"Model saved successfully to {modelPat}.");
-
+            _mlContext.Model.Save(_model, trainingData.Schema, ModelPath);
+            Console.WriteLine($"Model saved successfully to {ModelPath}.");
 
         }
         catch (Exception ex)
         {
             Console.WriteLine(ex.Message);
-            // throw;
         }
     }
 
@@ -167,9 +146,9 @@ public class SolutionRecommendationService : ISolutionRecommendationService
         if (_model == null)
         {
             Console.WriteLine("Loading pre-trained model...");
-            if (File.Exists("SolutionRecommendationModel.zip"))
+            if (File.Exists(ModelPath))
             {
-                _model = _mlContext.Model.Load("SolutionRecommendationModel.zip", out var _);
+                _model = _mlContext.Model.Load(ModelPath, out var _);
                 Console.WriteLine("Model loaded successfully.");
             }
             else

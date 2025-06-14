@@ -14,6 +14,7 @@ using Natia.Application.Dtos.Keys;
 using Natia.Gateway.Clients;
 using Natia.UI.Models;
 using System.Globalization;
+using System;
 
 namespace NatiaGuard.BrainStorm.Main;
 
@@ -111,7 +112,8 @@ public partial class Main
             @"\\192.168.1.102\ShearedFolders\musics\DanceDance.wav",
             @"\\192.168.1.102\ShearedFolders\musics\sleep.wav"
         };
-        Random rand = new Random();
+
+        var rand = _random;
     mods:
         try
         {
@@ -274,7 +276,7 @@ $"მაღალი პროცესორის დატვირთვა 
 $"გაფრთხილება: პროცესორის დატვირთვა ძალიან მაღალია. გთხოვთ, გამორთოთ არასაჭირო პროცესები. ნათია მადლობას გიხდით.",
 $"პროცესორზე მაღალი დატვირთვაა. გთხოვთ, გამორთოთ არასაჭირო აპლიკაციები. ნათია მადლობას გიხდით წინასწარ."
 };
-                            var random = new Random();
+                            var random = rand;
                             string whatNatiaSaid = responses[random.Next(responses.Length)];
                             await PlayAudioAndSave(await _makeSound.SpeakNow(whatNatiaSaid), whatNatiaSaid, whatNatiaSaid);
                         }
@@ -509,7 +511,7 @@ $"გაითიშა {ports.Count} არხი. გთხოვთ, და�
 $"ყურადღება! სისტემა გამოვიდა მწყობრიდან, გაგვეთშა {ports.Count} არხი!"
 };
 
-                    var random = new Random();
+                    var random = rand;
                     string whatNatiaSaid = responses[random.Next(responses.Length)];
                     var yvela = new CheckAndPlayModel
                     {
@@ -543,7 +545,7 @@ $"ყურადღება! სისტემა გამოვიდა �
                 }
                 else
                 {
-                    Random rnd = new Random();
+                    Random rnd = rand;
                     if (ports.Count > 1 && rnd.Next() % 2 == 0)
                     {
                         if (rnd.Next(34, 4566) % 2 == 1)
@@ -568,7 +570,7 @@ $"ყურადღება! სისტემა გამოვიდა �
                                 Console.WriteLine(portparsed);
                                 if (portparsed == 1500)
                                 {
-                                    Random random = new Random();
+                                    Random random = rand;
                                     var say = await GreetingNow(GretingKeys.Afternoon);
                                     await PlayAudioAndSave(await _makeSound.SpeakNow(say, 1), say, say);
 
@@ -586,7 +588,7 @@ $"ყურადღება! სისტემა გამოვიდა �
                                     await PlayAudioAndSave(await _makeSound.SpeakNow(say, 1), say, say);
                                     await PlayAudioAndSave(await _makeSound.SpeakNow("ავიმაღლოთ განწყობა.", 1), "Ganwyoba", "ავიმაღლოთ განწყობა.");
 
-                                    Random random = new Random();
+                                    Random random = _random;
                                     defaultDevice.AudioEndpointVolume.MasterVolumeLevelScalar = 0.9f;
                                     await PlayAudio($@"\\192.168.1.102\ShearedFolders\musics\{random.Next(100, 1456) % 30 + 1}.mp3");                                
 
@@ -600,7 +602,7 @@ $"ყურადღება! სისტემა გამოვიდა �
                                     await PlayAudioAndSave(await _makeSound.SpeakNow(say, 1), say, say);
                                     await PlayAudioAndSave(await _makeSound.SpeakNow("ავიმაღლოთ განწყობა.", -1), "Ganwyoba", "ავიმაღლოთ განწყობა.");
 
-                                    Random random = new Random();
+                                    Random random = _random;
                                     defaultDevice.AudioEndpointVolume.MasterVolumeLevelScalar = 0.95f;
                                     await PlayAudio($@"\\192.168.1.102\ShearedFolders\musics\{random.Next(100, 1496) % 30 + 1}.mp3");
                                     
@@ -614,7 +616,7 @@ $"ყურადღება! სისტემა გამოვიდა �
                                     await PlayAudioAndSave(await _makeSound.SpeakNow(say, 1), say, say);
                                     await PlayAudioAndSave(await _makeSound.SpeakNow("ავიმაღლოთ განწყობა.", -1), "ganwyoba", "ავიმაღლოთ განწყობა.");
 
-                                    Random random = new Random();
+                                    Random random = _random;
                                     defaultDevice.AudioEndpointVolume.MasterVolumeLevelScalar = 0.5f;
                                     await PlayAudio($@"\\192.168.1.102\ShearedFolders\musics\{random.Next(100, 1456) % 30 + 1}.mp3");                                   
                                     await PlayAudioAndSave(await _makeSound.SpeakNow(await checkweather(), -1), await checkweather(), await checkweather());
@@ -657,7 +659,6 @@ $"ყურადღება! სისტემა გამოვიდა �
                                 if (portparsed == 8170)
                                 {
                                     await BirthDay("დავით დარჩო", defaultDevice);
-
                                 }
                                 else
                                 if (portparsed == 1031)
@@ -684,7 +685,7 @@ $"ყურადღება! სისტემა გამოვიდა �
 "ოპტიკა გაითიშა გორში. დაუყოვნებლივ შეამოწმეთ და აცნობეთ შესაბამისი პასუხისმგებელი პირს.",
 "გორში სადგურთან კავშირი დავკარგე. გთხოვთ, სასწრაფოდ მიიღოთ ზომები და აცნობოთ შესაბამის პირს."
 };
-                                    var random = new Random();
+                                    var random = _random;
                                     string whatNatiaSaid = responses[random.Next(responses.Length)];
                                     var play = new CheckAndPlayModel
                                     {
@@ -723,7 +724,7 @@ $"ყურადღება! სისტემა გამოვიდა �
 "ოპტიკა გაითიშა ფოთში. დაუყოვნებლივ შეამოწმეთ და აცნობეთ შესაბამისი პასუხისმგებელი პირს.",
 "ფოთის სადგურთან კავშირი დავკარგე. გთხოვთ, სასწრაფოდ მიიღოთ ზომები და აცნობოთ შესაბამის პირს."
 };
-                                    var random = new Random();
+                                    var random = _random;
                                     string whatNatiaSaid = responses[random.Next(responses.Length)];
                                     var play = new CheckAndPlayModel
                                     {
@@ -761,7 +762,7 @@ $"ყურადღება! სისტემა გამოვიდა �
 "ოპტიკა გაითიშა ქუთაისში. დაუყოვნებლივ შეამოწმეთ და აცნობეთ შესაბამისი პასუხისმგებელი პირს.",
 "ქუთაისის სადგურთან კავშირი დავკარგე. გთხოვთ, სასწრაფოდ მიიღოთ ზომები და აცნობოთ შესაბამის პირს."
 };
-                                    var random = new Random();
+                                    var random = _random;
                                     string whatNatiaSaid = responses[random.Next(responses.Length)];
                                     var play = new CheckAndPlayModel
                                     {
@@ -800,7 +801,7 @@ $"ყურადღება! სისტემა გამოვიდა �
 "ოპტიკა გაითიშა თელავში. დაუყოვნებლივ შეამოწმეთ და აცნობეთ შესაბამისი პასუხისმგებელი პირს.",
 "თელავის სადგურთან კავშირი დავკარგე. გთხოვთ, სასწრაფოდ მიიღოთ ზომები და აცნობოთ შესაბამის პირს."
 };
-                                    var random = new Random();
+                                    var random = _random;
                                     string whatNatiaSaid = responses[random.Next(responses.Length)];
                                     var play = new CheckAndPlayModel
                                     {
@@ -840,7 +841,7 @@ $"ყურადღება! სისტემა გამოვიდა �
 "სარელეო სადგური ქუთაისში გაითიშა. გადამოწმე ან აცნობე შესაბამის პირს."
 };
 
-                                    var random = new Random();
+                                    var random = _random;
                                     string whatNatiaSaid = responses[random.Next(responses.Length)];
                                     var play = new CheckAndPlayModel
                                     {
@@ -880,7 +881,7 @@ $"ყურადღება! სისტემა გამოვიდა �
 "სარელეო სადგური ფოთში გაითიშა. გადამოწმე ან აცნობე შესაბამის პირს."
 };
 
-                                    var random = new Random();
+                                    var random = _random;
                                     string whatNatiaSaid = responses[random.Next(responses.Length)];
                                     var play = new CheckAndPlayModel
                                     {
@@ -919,7 +920,7 @@ $"ყურადღება! სისტემა გამოვიდა �
 "სარელეო სადგური თელავში გაითიშა. გადამოწმე ან აცნობე შესაბამის პირს."
 };
 
-                                    var random = new Random();
+                                    var random = _random;
                                     string whatNatiaSaid = responses[random.Next(responses.Length)];
                                     var play = new CheckAndPlayModel
                                     {
@@ -959,7 +960,7 @@ $"ყურადღება! სისტემა გამოვიდა �
 "სარელეო სადგური გორში გაითიშა. გადამოწმე ან აცნობე შესაბამის პირს."
 };
 
-                                    var random = new Random();
+                                    var random = _random;
                                     string whatNatiaSaid = responses[random.Next(responses.Length)];
                                     var play = new CheckAndPlayModel
                                     {
@@ -1028,7 +1029,7 @@ $"ყურადღება! სისტემა გამოვიდა �
            
             await PlayAudioAndSave(await _makeSound.SpeakNow("საშინლად გაბრაზებული ვარ. მჭირდება რელაქსაცია."), "Relaqsacia", "საშინლად გაბრაზებული ვარ. მჭირდება რელაქსაცია.");
 
-            Random random = new Random();
+            Random random = _random;
 
             await PlayAudio($@"\\192.168.1.102\ShearedFolders\musics\{random.Next(0, 31)}.mp3");
         }
@@ -1040,7 +1041,7 @@ $"ყურადღება! სისტემა გამოვიდა �
         var trans = await _transcoder.GetTranscoderInfoByChanellId(chanellid);
         if (chan != null && chan.Name != null)
         {
-            Random rnd = new Random();
+            Random rnd = _random;
             if (port >= 129 && port <= 133 || port >= 137 && port <= 143)
             {
                 var res = new CheckAndPlayModel
@@ -1094,7 +1095,7 @@ $"ყურადღება! სისტემა გამოვიდა �
                 var predict = await Predict(res);
                 float confidenceThreshold = res.Priority == Priority.კრიტიკული ? 0.7f : 0.5f;
 
-                // await PlayAudioAndSave(await _makeSound.SpeakNow($"{Solu.SuggestedSolution}", 1),Guid.NewGuid().ToString(),Solu.SuggestedSolution);
+                await PlayAudioAndSave(await _makeSound.SpeakNow($"{Solu.SuggestedSolution}", 1),Guid.NewGuid().ToString(),Solu.SuggestedSolution);
 
                 if (predict.IsAnomalous)
                 {
@@ -1180,7 +1181,7 @@ $"ყურადღება! სისტემა გამოვიდა �
                 await CheckAndPlayAsync(res, "SilkRecievers");
                 var Solu = Solution(res);
                 var predict = await Predict(res);
-                // await PlayAudioAndSave(await _makeSound.SpeakNow($"{Solu.SuggestedSolution}", 1), Guid.NewGuid().ToString(),Solu.SuggestedSolution);
+                await PlayAudioAndSave(await _makeSound.SpeakNow($"{Solu.SuggestedSolution}", 1), Guid.NewGuid().ToString(),Solu.SuggestedSolution);
 
                 if (predict.IsAnomalous)
                 {
@@ -1206,7 +1207,7 @@ $"ყურადღება! სისტემა გამოვიდა �
                 await CheckAndPlayAsync(res, "Icones");
                 var Solu = Solution(res);
                 var predict = await Predict(res);
-                // await PlayAudioAndSave(await _makeSound.SpeakNow($"{Solu.SuggestedSolution}", 1), Guid.NewGuid().ToString(),Solu.SuggestedSolution);
+                await PlayAudioAndSave(await _makeSound.SpeakNow($"{Solu.SuggestedSolution}", 1), Guid.NewGuid().ToString(),Solu.SuggestedSolution);
 
                 if (predict.IsAnomalous)
                 {
@@ -1230,10 +1231,10 @@ $"ყურადღება! სისტემა გამოვიდა �
                     ErrorMessage = "ტე ორს აქვს  ხარვეზი"
                 };
 
-                await CheckAndPlayAsync(res, "T2Recievers");
+                await CheckAndPlayAsync(res);
                 var Solu = Solution(res);
                 var predict = await Predict(res);
-                //await PlayAudioAndSave(await _makeSound.SpeakNow($"{Solu.SuggestedSolution}", 1), Guid.NewGuid().ToString(),Solu.SuggestedSolution);
+                await PlayAudioAndSave(await _makeSound.SpeakNow($"{Solu.SuggestedSolution}", 1), Guid.NewGuid().ToString(),Solu?.SuggestedSolution??"");
 
                 if (predict.IsAnomalous)
                 {
@@ -1259,7 +1260,7 @@ $"ყურადღება! სისტემა გამოვიდა �
                 await CheckAndPlayAsync(res, "Multiswitch3");
                 var Solu = Solution(res);
                 var predict = await Predict(res);
-                // await PlayAudioAndSave(await _makeSound.SpeakNow($"{Solu.SuggestedSolution}", 1), Guid.NewGuid().ToString(),Solu.SuggestedSolution);
+                await PlayAudioAndSave(await _makeSound.SpeakNow($"{Solu.SuggestedSolution}", 1), Guid.NewGuid().ToString(),Solu.SuggestedSolution);
 
                 if (predict.IsAnomalous)
                 {
@@ -1287,7 +1288,7 @@ $"ყურადღება! სისტემა გამოვიდა �
                 var Solu = Solution(res);
                 var predict = await Predict(res);
 
-                // await PlayAudioAndSave(await _makeSound.SpeakNow($"{Solu.SuggestedSolution}", 1), Guid.NewGuid().ToString(),Solu.SuggestedSolution);
+                await PlayAudioAndSave(await _makeSound.SpeakNow($"{Solu.SuggestedSolution}", 1), Guid.NewGuid().ToString(),Solu.SuggestedSolution);
 
                 if (predict.IsAnomalous)
                 {
@@ -1314,7 +1315,7 @@ $"ყურადღება! სისტემა გამოვიდა �
                 await CheckAndPlayAsync(res, "Multiswitch2");
                 var Solu = Solution(res);
                 var predict = await Predict(res);
-                // await PlayAudioAndSave(await _makeSound.SpeakNow($"{Solu.SuggestedSolution}", 1), Guid.NewGuid().ToString(),Solu.SuggestedSolution);
+                await PlayAudioAndSave(await _makeSound.SpeakNow($"{Solu.SuggestedSolution}", 1), Guid.NewGuid().ToString(),Solu.SuggestedSolution);
 
                 if (predict.IsAnomalous)
                 {
@@ -1339,9 +1340,11 @@ $"ყურადღება! სისტემა გამოვიდა �
 
                 await CheckAndPlayAsync(res);
 
+                var Solu = Solution(res);
+
                 var predict = await Predict(res);
 
-                // await PlayAudioAndSave(await _makeSound.SpeakNow($"{Solu.SuggestedSolution}", 1),Guid.NewGuid().ToString(),Solu.SuggestedSolution);
+                await PlayAudioAndSave(await _makeSound.SpeakNow($"{Solu.SuggestedSolution}", 1),Guid.NewGuid().ToString(),Solu.SuggestedSolution);
 
                 if (predict.IsAnomalous)
                 {
@@ -1352,12 +1355,12 @@ $"ყურადღება! სისტემა გამოვიდა �
             else
             {
                 var responses = new[]
-{
-$"{chan?.NameForSpeake??""}-ზე დაფიქსირდა ხარვეზი, გთხოვთ გადაამოწმოთ.",
-$"{CorrectNameI(chan?.NameForSpeake??"")} არ მუშაობს სტაბილურად",
-$"{CorrectNameI(chan?.NameForSpeake??"")} არ მაუწყებლობს",
-};
-                var random = new Random();
+                         {
+                          $"{chan?.NameForSpeake??""}-ზე დაფიქსირდა ხარვეზი, გთხოვთ გადაამოწმოთ.",
+                          $"{CorrectNameI(chan?.NameForSpeake??"")} არ მუშაობს სტაბილურად",
+                          $"{CorrectNameI(chan?.NameForSpeake??"")} არ მაუწყებლობს",
+                         };
+                var random = _random;
                 string whatNatiaSaid = responses[random.Next(responses.Length)];
                 var rek = new CheckAndPlayModel
                 {
@@ -1406,7 +1409,6 @@ $"{CorrectNameI(chan?.NameForSpeake??"")} არ მაუწყებლობ�
                             case 70:
                                 {
                                     //var req = await _allInOne.GetRecieverInfoByChanellId(chan.Id);
-
                                     await PlayAudioAndSave(await _makeSound.SpeakNow("არხი არის ემპეგე ორი ფორმატის, და მოდის თანამგზავრიდან, შეეცადე ჩართო სხვა წყაროდან.თუ არის შესაძლებელი"), "EMPG2", "არხი არის ემპეგე ორი ფორმატის, და მოდის თანამგზავრიდან, შეეცადე ჩართო სხვა წყაროდან.თუ არის შესაძლებელი");
                                     break;
                                 }
@@ -1417,16 +1419,25 @@ $"{CorrectNameI(chan?.NameForSpeake??"")} არ მაუწყებლობ�
                                     if (trans is not null)
                                     {
                                         var responsesharm = new[]
-{
-$"{CorrectNameI(chan?.NameForSpeake??"")} გატარებულია ჰარმონიკის ტრანსკოდერში: ჰარმონიკ {trans?.Emr_Number}, პორტ {trans?.Card}, სტრიმ {trans?.Port}. გთხოვთ გადაამოწმოთ სტრიმის სტატუსი.",
-$"შეამოწმეთ ჰარმონიკის ტრანსკოდერი. ჰარმონიკ {trans?.Emr_Number}, პორტ {trans?.Card}, სტრიმ {trans?.Port}. შესაძლოა, სიგნალი დაეცა.",
-$"გადაამოწმე, ჰარმონიკ {trans?.Emr_Number}, პორტ {trans?.Card}, სტრიმ {trans?.Port}. დაუყოვნებლივ გადაამოწმე და დარწმუნდი, რომ ყველაფერი გამართულად მუშაობს.",
-$"ჰარმონიკის ტრანსკოდერი: ჰარმონიკ {trans?.Emr_Number}, პორტ {trans?.Card}, სტრიმ {trans?.Port}. დარწმუნდით, რომ სიგნალი სტაბილურია.",
-$"გთხოვთ, შეამოწმოთ ჰარმონიკის ტრანსკოდერი. ჰარმონიკ {trans?.Emr_Number}, პორტ {trans?.Card}, სტრიმ {trans?.Port}. სიგნალის დაკარგვის შემთხვევაში, დაუყოვნებლივ იმოქმედეთ.",
-$"{CorrectNameI(chan?.NameForSpeake??"")} გადის ჰარმონიკის ტრანსკოდერში. ჰარმონიკ {trans?.Emr_Number}, პორტ {trans?.Card}, სტრიმ {trans?.Port}. შეამოწმეთ, რომ ყველაფერი წესრიგშია.",
-};
+                                            {
+                                             $"{CorrectNameI(chan?.NameForSpeake??"")} გატარებულია ჰარმონიკის ტრანსკოდერში: ჰარმონიკ {trans?.Emr_Number}, პორტ {trans?.Card}, სტრიმ {trans?.Port}. გთხოვთ გადაამოწმოთ სტრიმის სტატუსი.",
+                                             $"შეამოწმეთ ჰარმონიკის ტრანსკოდერი. ჰარმონიკ {trans?.Emr_Number}, პორტ {trans?.Card}, სტრიმ {trans?.Port}. შესაძლოა, სიგნალი დაეცა.",
+                                             $"გადაამოწმე, ჰარმონიკ {trans?.Emr_Number}, პორტ {trans?.Card}, სტრიმ {trans?.Port}. დაუყოვნებლივ გადაამოწმე და დარწმუნდი, რომ ყველაფერი გამართულად მუშაობს.",
+                                             $"ჰარმონიკის ტრანსკოდერი: ჰარმონიკ {trans?.Emr_Number}, პორტ {trans?.Card}, სტრიმ {trans?.Port}. დარწმუნდით, რომ სიგნალი სტაბილურია.",
+                                             $"გთხოვთ, შეამოწმოთ ჰარმონიკის ტრანსკოდერი. ჰარმონიკ {trans?.Emr_Number}, პორტ {trans?.Card}, სტრიმ {trans?.Port}. სიგნალის დაკარგვის შემთხვევაში, დაუყოვნებლივ იმოქმედეთ.",
+                                             $"{CorrectNameI(chan?.NameForSpeake??"")} გადის ჰარმონიკის ტრანსკოდერში. ჰარმონიკ {trans?.Emr_Number}, პორტ {trans?.Card}, სტრიმ {trans?.Port}. შეამოწმეთ, რომ ყველაფერი წესრიგშია.",
+                                              $"მიღებულია გაფრთხილება არხთან დაკავშირებით: {CorrectNameI(chan?.NameForSpeake??"")} გადის ჰარმონიკის ტრანსკოდერით. ჰარმონიკ {trans?.Emr_Number}, პორტ {trans?.Card}, სტრიმ {trans?.Port}.",
+                                              $"შესაძლოა არხი {CorrectNameI(chan?.NameForSpeake??"")} შეფერხებით გადის. გთხოვთ, გადაამოწმეთ ჰარმონიკის ტრანსკოდერის სტრიმი {trans?.Port}.",
+                                              $"ჰარმონიკის ტრანსკოდერზე დაფიქსირდა არასტაბილური გადაცემა. არხი: {CorrectNameI(chan?.NameForSpeake??"")}, ჰარმონიკი: {trans?.Emr_Number}, სტრიმი: {trans?.Port}.",
+                                              $"შესაძლო სიგნალის წყვეტა დაფიქსირდა არხზე {CorrectNameI(chan?.NameForSpeake??"")}. გადაამოწმეთ ჰარმონიკ {trans?.Emr_Number}, პორტ {trans?.Card}, სტრიმ {trans?.Port}.",
+                                              $"გთხოვთ, ყურადღება მიაქციეთ არხს {CorrectNameI(chan?.NameForSpeake??"")}. ჰარმონიკ {trans?.Emr_Number}, პორტ {trans?.Card}, სტრიმ {trans?.Port} – სტაბილურობა საეჭვოა.",
+                                              $"დაფიქსირდა გადაცემის შეფერხება ჰარმონიკის ტრანსკოდერზე. არხი: {CorrectNameI(chan?.NameForSpeake??"")}, სტრიმი: {trans?.Port}.",
+                                              $"სისტემამ დააფიქსირა შესაძლო პრობლემა: ჰარმონიკ {trans?.Emr_Number}, სტრიმ {trans?.Port}, არხი {CorrectNameI(chan?.NameForSpeake??"")}. დაუყოვნებლივ გადაამოწმეთ.",
+                                             $"გაფრთხილება: ჰარმონიკ {trans?.Emr_Number}, პორტ {trans?.Card} – შეიძლება, არხი {CorrectNameI(chan?.NameForSpeake??"")} ავარიულ რეჟიმში იმყოფება.",
+                                              $"შემოწმება საჭიროა: ჰარმონიკ {trans?.Emr_Number}, სტრიმ {trans?.Port}. არხი {CorrectNameI(chan?.NameForSpeake??"")} არასტაბილურად გადის.",
+                                        };
 
-                                        var randomharm = new Random();
+                                        var randomharm = _random;
                                         string say = responsesharm[randomharm.Next(responsesharm.Length)];
                                         await CheckAndPlayAsync(new CheckAndPlayModel
                                         {
@@ -1720,37 +1731,36 @@ $"{CorrectNameI(chan?.NameForSpeake??"")} გადის ჰარმონი�
                     }
                 }
 
-                if (chan?.FromOptic==true)
+                if (chan?.FromOptic == true)
                 {
                     var index = RandomIndex(int.MaxValue);
                     string say;
 
+                    var responsesopticA = new[]
+                    {
+        $"{CorrectNameI(chan?.NameForSpeake ?? "")} მოდის მუხიანიდან, გადაამოწმე. საჭიროების შემთხვევაში გადაურეკე!",
+        $"მუხიანში {chan?.NameForSpeake}-ზე აქვთ ხარვეზი. გთხოვთ გადაამოწმოთ.",
+        $"მუხიანიდან შემოსულ არხზე {CorrectNameI(chan?.NameForSpeake ?? "")} დაფიქსირდა შეფერხება. გადაამოწმე.",
+              };
+
+                    var responsesopticB = new[]
+                    {
+        $"{CorrectNameI(chan?.NameForSpeake ?? "")} გვაქვს მიღებული ოპტიკით, გადაამოწმე იემერ ორასათი.",
+        $"შეამოწმეთ ოპტიკის არხი {CorrectNameI(chan?.NameForSpeake ?? "")}, იემერ ორასათში.",
+          };
+                    var responsesopticC = new[]
+                    {
+        $"გადაამოწმე იემერ ორასათი, თუ {CorrectNameI(chan?.NameForSpeake ?? "")} არ მოდის, გადარეკე მუხიანში და შეატყობინე.",
+        $"თუ იემერ ორასათში {CorrectNameI(chan?.NameForSpeake ?? "")} არ მოდის, შეატყობინე მუხიანის მორიგეს.",
+        $"არხი {CorrectNameI(chan?.NameForSpeake ?? "")} იემერ ორასათში არ ჩანს. დაუყოვნებლივ მიმართე მუხიანს.",
+         };
+
                     if (index % 3 == 0)
-                    {
-                        var responsesoptic = new[]
-                        {
-    $"{CorrectNameI(chan?.NameForSpeake??"")} მოდის მუხიანიდან, გადაამოწმე. საჭიროების შემთხვევაში გადაურეკე!",
-    $"მუხიანში {chan?.NameForSpeake}-ზე აქვთ ხარვეზი. გთხოვთ გადაამოწმოთ.",
-};
-                        say = responsesoptic[new Random().Next(responsesoptic.Length)];
-                    }
+                        say = responsesopticA[_random.Next(responsesopticA.Length)];
                     else if (index % 2 == 0)
-                    {
-                        var responsesoptic = new[]
-                        {
-    $"{CorrectNameI(chan?.NameForSpeake??"")} გვაქვს მიღებული ოპტიკით, გადაამოწმე იემერ ორასათი.",
-};
-                        say = responsesoptic[new Random().Next(responsesoptic.Length)];
-                    }
+                        say = responsesopticB[_random.Next(responsesopticB.Length)];
                     else
-                    {
-                        var responsesoptic = new[]
-                        {
-    $"გადაამოწმე იემერ ორასათი, თუ {CorrectNameI(chan?.NameForSpeake??"")} არ მოდის, გადარეკე მუხიანში და შეატყობინე.",
-    $"თუ იემერ ორასათში {CorrectNameI(chan?.NameForSpeake??"")} არ მოდის, შეატყობინე მუხიანის მორიგეს."
-};
-                        say = responsesoptic[new Random().Next(responsesoptic.Length)];
-                    }
+                        say = responsesopticC[_random.Next(responsesopticC.Length)];
 
                     await CheckAndPlayAsync(new CheckAndPlayModel
                     {
@@ -1760,7 +1770,7 @@ $"{CorrectNameI(chan?.NameForSpeake??"")} გადის ჰარმონი�
                         Priority = Priority.საშუალო,
                         WhatWasTopic = Topic.არხი,
                         ChannelName = chan?.Name,
-                        Satellite = chan?.FromOptic==true ? "მუხიანიდან წამოსული არხი" : "თანამგზავრული არხი",
+                        Satellite = chan?.FromOptic == true ? "მუხიანიდან წამოსული არხი" : "თანამგზავრული არხი",
                         SuggestedSolution = $"გაითშა {chan?.NameForSpeake}",
                         ErrorDetails = "გადაამოწმე სისტემაში პრობლემა გვაქვს",
                         ErrorMessage = "გაგეთიშა არხი, ბითრეით დაეცა"
@@ -1781,7 +1791,7 @@ $"არხი აქტიურია თანამგზავრული 
 $"გირჩევთ გადაამოწმოთ იემერ {req?.EmrNumber}, ქარდ {req?.Card}, პორტ {req?.Port}."
 };
 
-                            var randomrec = new Random();
+                            var randomrec = _random;
                             string say = responsesrec[randomrec.Next(responsesrec.Length)];
 
                             await CheckAndPlayAsync(new CheckAndPlayModel
@@ -1836,9 +1846,9 @@ $"შესაბამისი ინფორმაცია შეგიძ�
 
 $"შეამოწმეთ, თუ დესკრამბლერი სწორად მუშაობს. წითელი სტატუსის შემთხვევაში, ბარათი გააქტიურეთ აიქონის რესივერით. " +
 $"შედი სადგურში, იემერ {desk?.EmrNumber}, ქარდ {desk?.Card}, პორტ {desk?.Port}. ბარათის გააქტიურებისათვის, დეტალები იხილეთ ლუნგსატის ვებსაიტზე ან ექსელის ფაილში."
-};
+                            };
 
-                            var randomDesk = new Random();
+                            var randomDesk = _random;
                             string say = responsesdesk[randomDesk.Next(responsesdesk.Length)];
 
                             await CheckAndPlayAsync(new CheckAndPlayModel

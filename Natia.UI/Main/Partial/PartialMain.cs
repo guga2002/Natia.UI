@@ -17,6 +17,7 @@ namespace NatiaGuard.BrainStorm.Main;
 public partial class Main
 {
 
+    private static readonly Random _random = new();
     private async Task Heartbeat()
     {
         var res = await _natiaClient.HeartBeat();
@@ -31,6 +32,8 @@ public partial class Main
             ErrorMessage = model.ErrorMessage,
             ErrorDetails = model.ErrorDetails,
             Satellite = model.Satellite,
+            WhatWasTopic=model.WhatWasTopic,
+            Priority=model.Priority,
         };
         return await _predict.Predict(input);
     }
@@ -65,8 +68,7 @@ public partial class Main
     #region Randomizer
     private int RandomIndex(int rand)
     {
-        Random random = new Random();
-        return random.Next(0,rand);
+        return _random.Next(0,rand);
     }
 
     #endregion
@@ -74,13 +76,12 @@ public partial class Main
     #region MyRegion
     public async Task<string> GreetingNow(string time)
     {
-        Random ran = new Random();
 
         var greetings = await _db.Greetings.Where(io => io.Category == time).ToListAsync();
 
         if (greetings.Any())
         {
-            var index = ran.Next(0, greetings.Count); 
+            var index = _random.Next(0, greetings.Count); 
             return greetings[index].Text??"";
         }
         return "გისურვებთ ბედნიერ მორიგეობას";
@@ -189,7 +190,6 @@ public partial class Main
                 }
             }
             return shedeg;
-            return string.Empty;
         }
         catch (Exception ex)
         {
@@ -434,18 +434,17 @@ public partial class Main
     #region BirthDay
     public async Task BirthDay(string name, MMDevice defaultDevice)
     {
-        Random random = new Random();
        await PlayAudioAndSave( await _makeSound.SpeakNow($"{name}, გილოცავ დაბადების დღეს! გისურვებ წარმატებებს, ბედნიერებას, ჯანმრთელობასა და სიხარულით სავსე მომავალს. იმედია, ყველა შენი სურვილი ახდება და კიდევ უამრავ ლამაზ დაბადების დღეს ერთად აღვნიშნავთ.", 1),Guid.NewGuid().ToString(), $"{name}, გილოცავ დაბადების დღეს! გისურვებ წარმატებებს, ბედნიერებას, ჯანმრთელობასა და სიხარულით სავსე მომავალს. იმედია, ყველა შენი სურვილი ახდება და კიდევ უამრავ ლამაზ დაბადების დღეს ერთად აღვნიშნავთ.");
 
         defaultDevice.AudioEndpointVolume.MasterVolumeLevelScalar = 0.4f;
 
-        await PlayAudio($@"\\192.168.1.102\ShearedFolders\musics\leqsi{(random.Next()%3)+1}.mp3");
+        await PlayAudio($@"\\192.168.1.102\ShearedFolders\musics\leqsi{(_random.Next()%3)+1}.mp3");
 
         await PlayAudioAndSave( await _makeSound.SpeakNow("ახლა დროა განწყობა ავიმაღლოთ!", 1),"amaglebaganwkoba", "ახლა დროა განწყობა ავიმაღლოთ!");
 
         defaultDevice.AudioEndpointVolume.MasterVolumeLevelScalar = 0.8f;
 
-        await PlayAudio(@$"\\192.168.1.102\ShearedFolders\musics\Birthday{(random.Next() % 3) + 1}.mp3");
+        await PlayAudio(@$"\\192.168.1.102\ShearedFolders\musics\Birthday{(_random.Next() % 3) + 1}.mp3");
 
        await PlayAudioAndSave( await _makeSound.SpeakNow($"{name}, მრავალ დაბადების დღეს დაესწარი! დაე, მუდამ გაგვაბედნიეროს შენი ღიმილმა და სიხარულმა.", 1),Guid.NewGuid().ToString(),$"{name}, მრავალ დაბადების დღეს დაესწარი! დაე, მუდამ გაგვაბედნიეროს შენი ღიმილმა და სიხარულმა.");
 

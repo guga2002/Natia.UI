@@ -7,7 +7,7 @@ namespace Natia.Persistance.Repositories;
 public class SoundRepository : ISoundRepository
 {
     private readonly NatiaSettings natiaSettings;
-
+    private static Random _random= new();
     public SoundRepository()
     {
         natiaSettings = new NatiaSettings();
@@ -17,7 +17,6 @@ public class SoundRepository : ISoundRepository
     {
         try
         {
-            Random random = new Random();
             await Task.Delay(1);
 
             using (var synthesizer = new SpeechSynthesizer())
@@ -35,8 +34,8 @@ public class SoundRepository : ISoundRepository
                 {
                     synthesizer.SelectVoice(selectedVoice.VoiceInfo.Name);
 
-                    synthesizer.Rate = baseRate + random.Next(-2, 3);
-                    synthesizer.Volume = random.Next(75, 101);
+                    synthesizer.Rate = baseRate + _random.Next(-2, 2);
+                    synthesizer.Volume = _random.Next(75, 101);
 
                     synthesizer.SetOutputToWaveStream(memoryStream);
 

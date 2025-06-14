@@ -20,22 +20,10 @@ public class SounServices : ISoundService
         {
             return null;
         }
+
         try
         {
-            //return await soundRepository.SpeakNow(text, second);
-            var hour = DateTime.Now.Hour;
-
-            //    ? "ka-GE-GiorgiNeural" 
-            //    : "ka-GE-EkaNeural";
-
-            if (hour >= 22 || hour < 11)
-            {
-                return await _azureSpeechToTextService.ConvertTextToSpeechAsync(text);
-            }
-            else
-            {
-                return await soundRepository.SpeakNow(text, second);
-            }
+            return await soundRepository.SpeakNow(text, second);
         }
         catch (Exception)
         {

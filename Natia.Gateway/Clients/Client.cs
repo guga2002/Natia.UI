@@ -22,7 +22,7 @@ public partial class Client
 
         var res = await client.GetAsync(requestUrl);
 
-        if (res.IsSuccessStatusCode&& res.StatusCode!=System.Net.HttpStatusCode.NoContent)
+        if (res.IsSuccessStatusCode && res.StatusCode!=System.Net.HttpStatusCode.NoContent)
         {
             var resultString = await res.Content.ReadAsStringAsync();
 
@@ -45,7 +45,7 @@ public partial class Client
 
         var res = await client.GetAsync(requestUrl);
 
-        if (res.IsSuccessStatusCode&&res.StatusCode!=System.Net.HttpStatusCode.NoContent)
+        if (res.IsSuccessStatusCode && res.StatusCode!=System.Net.HttpStatusCode.NoContent)
         {
             var resultString = await res.Content.ReadAsStringAsync();
 
@@ -89,8 +89,6 @@ public partial class Client
             throw;
         }
     }
-
-    //
 
     public async Task<string> GetAnniversaryDates(CancellationToken cancellationToken = default)
     {
@@ -257,7 +255,7 @@ public partial class Client
                 ServerCertificateCustomValidationCallback = (message, cert, chain, sslPolicyErrors) => true
             };
             var client = new HttpClient(handler);
-            var requestUrl = "https://192.168.1.102:3999/api/controll/heartbeat/true";
+            var requestUrl = "https://192.168.0.79:2000/api/controll/heartbeat/true";
 
             var res = await client.GetAsync(requestUrl);
 
