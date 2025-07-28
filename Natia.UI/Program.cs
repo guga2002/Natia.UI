@@ -12,20 +12,32 @@ using NatiaGuard.BrainStorm.Main;
 using NLog;
 using NLog.Web;
 
+var nlogConfigPath = Path.Combine(AppContext.BaseDirectory, "nlog.config");
+
+// Check if nlog.config exists before using it
+if (!File.Exists(nlogConfigPath))
+{
+    Console.ForegroundColor = ConsoleColor.Red;
+    Console.WriteLine($"FATAL: nlog.config not found at {nlogConfigPath}");
+    Console.ResetColor();
+    throw new FileNotFoundException($"Required logging configuration file not found: {nlogConfigPath}");
+}
+
 var logger = LogManager.Setup()
-    .LoadConfigurationFromFile("nlog.config")
+    .LoadConfigurationFromFile(nlogConfigPath)
     .GetCurrentClassLogger();
 
 try
 {
     var builder = WebApplication.CreateBuilder(args);
-
     builder.Logging.ClearProviders();
+    builder.Logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
     builder.Host.UseNLog();
+    builder.Host.UseWindowsService();
 
     builder.WebHost.UseKestrel(options =>
     {
-        options.ListenAnyIP(1331); 
+        options.ListenAnyIP(1331);
     });
 
     builder.Services.AddHttpClient();
@@ -38,7 +50,9 @@ try
 
     builder.Services.AddDbContext<SpeakerDbContext>(io =>
     {
-        io.UseSqlServer(builder.Configuration.GetConnectionString("Server=192.168.1.102;Database=JandagBase;User Id=Guga13guga;Password=Guga13gagno!;Encrypt=True;TrustServerCertificate=True;"));
+        io.UseSqlServer(builder.Configuration.GetConnectionString(
+            "Server=192.168.1.102;Database=JandagBase;User Id=Guga13guga;Password=Guga13gagno!;Encrypt=True;TrustServerCertificate=True;"
+        ));
     });
 
     builder.Services.AddScoped<Main>();
