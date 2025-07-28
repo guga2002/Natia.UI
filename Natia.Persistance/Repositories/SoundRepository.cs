@@ -1,15 +1,19 @@
 ﻿using Natia.Persistance.Interface;
 using Natia.Persistance.Model;
 using System.Speech.Synthesis;
+using Microsoft.Extensions.Logging;
 
 namespace Natia.Persistance.Repositories;
 
 public class SoundRepository : ISoundRepository
 {
     private readonly NatiaSettings natiaSettings;
-    private static Random _random= new();
-    public SoundRepository()
+    private static readonly Random _random = new();
+    private readonly ILogger<SoundRepository> _logger;
+
+    public SoundRepository(ILogger<SoundRepository> logger)
     {
+        _logger = logger;
         natiaSettings = new NatiaSettings();
     }
 
@@ -17,6 +21,8 @@ public class SoundRepository : ISoundRepository
     {
         try
         {
+            _logger.LogInformation("Starting speech synthesis for text: \"{Text}\" with baseRate: {BaseRate}", text, baseRate);
+
             await Task.Delay(1);
 
             using (var synthesizer = new SpeechSynthesizer())
@@ -25,6 +31,9 @@ public class SoundRepository : ISoundRepository
                 var voices = synthesizer.GetInstalledVoices()
                                          .Where(voice => voice.Enabled)
                                          .ToList();
+
+                _logger.LogDebug("Found {VoiceCount} installed voices. Searching for language {Language} and model {Model}.",
+                    voices.Count, natiaSettings.Language, natiaSettings.Model);
 
                 var selectedVoice = voices.FirstOrDefault(voice =>
                     voice.VoiceInfo.Culture.Name.StartsWith(natiaSettings.Language) &&
@@ -37,24 +46,27 @@ public class SoundRepository : ISoundRepository
                     synthesizer.Rate = baseRate + _random.Next(-2, 2);
                     synthesizer.Volume = _random.Next(75, 101);
 
-                    synthesizer.SetOutputToWaveStream(memoryStream);
+                    _logger.LogInformation("Selected voice: {VoiceName} | Rate: {Rate} | Volume: {Volume}",
+                        selectedVoice.VoiceInfo.Name, synthesizer.Rate, synthesizer.Volume);
 
+                    synthesizer.SetOutputToWaveStream(memoryStream);
                     synthesizer.Speak(text);
 
+                    _logger.LogInformation("Speech synthesis completed successfully for text: \"{Text}\".", text);
                     return memoryStream.ToArray();
                 }
                 else
                 {
-                    Console.WriteLine("No matching voice found.");
+                    _logger.LogWarning("No matching voice found for language {Language} and model {Model}.",
+                        natiaSettings.Language, natiaSettings.Model);
                     return null;
                 }
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error while speaking: {ex.Message}");
+            _logger.LogError(ex, "Error occurred while generating speech for text: \"{Text}\".", text);
             return null;
         }
     }
-
 }

@@ -9,29 +9,46 @@ using Natia.Persistance.Interface;
 using Natia.Persistance.Repositories;
 using Natia.UI.Jobs;
 using NatiaGuard.BrainStorm.Main;
+using NLog;
+using NLog.Web;
 
-var builder = WebApplication.CreateBuilder(args);
+var logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
+logger.Debug("Starting Natia.UI application...");
 
-builder.Services.AddHttpClient();
-
-builder.Services.AddCommonServices();
-
-builder.Services.AddScoped<ISolutionRecommendationService, SolutionRecommendationService>();
-
-builder.Services.AddScoped<ISmtpClientRepository,SmtpClientRepository>();
-
-builder.Services.AddScoped<INeuralMLPredict, NeuralMLPredict>();
-
-builder.Services.AddScoped<IImapServices, ImapService>();
-
-builder.Services.AddDbContext<SpeakerDbContext>(io =>
+try
 {
-    io.UseSqlServer(builder.Configuration.GetConnectionString("Server=192.168.1.102;Database=JandagBase;User Id=Guga13guga;Password=Guga13gagno!;Encrypt=True;TrustServerCertificate=True;"));
-});
-builder.Services.AddScoped<Main>();
+    var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddHostedService<Worker>();
+    builder.Logging.ClearProviders();
+    builder.Host.UseNLog();
 
-var app = builder.Build();
+    builder.Services.AddHttpClient();
+    builder.Services.AddCommonServices();
 
-app.Run();
+    builder.Services.AddScoped<ISolutionRecommendationService, SolutionRecommendationService>();
+    builder.Services.AddScoped<ISmtpClientRepository, SmtpClientRepository>();
+    builder.Services.AddScoped<INeuralMLPredict, NeuralMLPredict>();
+    builder.Services.AddScoped<IImapServices, ImapService>();
+
+    builder.Services.AddDbContext<SpeakerDbContext>(io =>
+    {
+        io.UseSqlServer(builder.Configuration.GetConnectionString("Server=192.168.1.102;Database=JandagBase;User Id=Guga13guga;Password=Guga13gagno!;Encrypt=True;TrustServerCertificate=True;"));
+    });
+
+    builder.Services.AddScoped<Main>();
+    builder.Services.AddHostedService<Worker>();
+
+    var app = builder.Build();
+    logger.Info("Natia.UI application configured successfully. Starting host...");
+
+    await app.RunAsync();
+}
+catch (Exception ex)
+{
+    logger.Error(ex, "Application terminated unexpectedly.");
+    throw;
+}
+finally
+{
+    LogManager.Shutdown();
+}

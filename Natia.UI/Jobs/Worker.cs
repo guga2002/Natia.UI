@@ -1,4 +1,11 @@
-﻿namespace Natia.UI.Jobs
+﻿using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace Natia.UI.Jobs
 {
     public class Worker : BackgroundService
     {
@@ -13,16 +20,32 @@
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            _logger.LogInformation("Worker service started at: {time}", DateTime.UtcNow);
+
             while (!stoppingToken.IsCancellationRequested)
             {
-                using (var scope = _scopeFactory.CreateScope())
+                try
                 {
-                    var mainService = scope.ServiceProvider.GetRequiredService<NatiaGuard.BrainStorm.Main.Main>();
+                    _logger.LogDebug("Worker loop triggered at: {time}", DateTime.UtcNow);
 
-                    await mainService.Start();
+                    using (var scope = _scopeFactory.CreateScope())
+                    {
+                        var mainService = scope.ServiceProvider.GetRequiredService<NatiaGuard.BrainStorm.Main.Main>();
+
+                        _logger.LogInformation("Executing NatiaGuard Main.Start at: {time}", DateTime.UtcNow);
+                        await mainService.Start();
+                        _logger.LogInformation("Completed NatiaGuard Main.Start at: {time}", DateTime.UtcNow);
+                    }
                 }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "An error occurred in Worker loop at: {time}", DateTime.UtcNow);
+                }
+
                 await Task.Delay(500, stoppingToken);
             }
+
+            _logger.LogInformation("Worker service stopped at: {time}", DateTime.UtcNow);
         }
     }
 }

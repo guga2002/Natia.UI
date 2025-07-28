@@ -15,6 +15,7 @@ using Natia.Gateway.Clients;
 using Natia.UI.Models;
 using System.Globalization;
 using System;
+using Microsoft.Extensions.Logging;
 
 namespace NatiaGuard.BrainStorm.Main;
 
@@ -80,7 +81,8 @@ public partial class Main
         INeuralRepository neuralRepository,
         ISolutionRecommendationService recomendation,
         INeuralMLPredict predict,
-        IImapServices imapService)
+        IImapServices imapService,
+        ILogger<Client> clientLog)
     {
         _makeSound = makeSound ?? throw new ArgumentNullException(nameof(makeSound));
         _channels = channels ?? throw new ArgumentNullException(nameof(channels));
@@ -93,7 +95,7 @@ public partial class Main
         _reciever = reciever ?? throw new ArgumentNullException(nameof(reciever));
         _temperature = temperature ?? throw new ArgumentNullException(nameof(temperature));
         _httpClient = httpClient;
-        _natiaClient = new Client();
+        _natiaClient = new Client(clientLog);
         _smtpClientRepository = _client;
         this.neuralRepository = neuralRepository;
         _Recomendation = recomendation;
