@@ -22,10 +22,8 @@ public class Worker : BackgroundService
         {
             try
             {
-                Console.WriteLine("vlogav");
-                _logger.LogDebug("Worker loop triggered at: {time}", DateTime.UtcNow);
                 _logger.LogInformation("Executing NatiaGuard Main.Start at: {time}", DateTime.UtcNow);
-                //await mainService.Start();
+                await mainService.Start();
                 _logger.LogInformation("Completed NatiaGuard Main.Start at: {time}", DateTime.UtcNow);
             }
             catch (Exception ex)
