@@ -12,8 +12,9 @@ using NatiaGuard.BrainStorm.Main;
 using NLog;
 using NLog.Web;
 
-var logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
-logger.Debug("Starting Natia.UI application...");
+var logger = LogManager.Setup()
+    .LoadConfigurationFromFile("nlog.config")
+    .GetCurrentClassLogger();
 
 try
 {

@@ -1,5 +1,4 @@
 ﻿using System.Drawing.Printing;
-using NAudio.Wave;
 using NAudio.CoreAudioApi;
 using System.Diagnostics;
 using Natia.Application.Contracts;
@@ -14,8 +13,6 @@ using Natia.Application.Dtos.Keys;
 using Natia.Gateway.Clients;
 using Natia.UI.Models;
 using System.Globalization;
-using System;
-using Microsoft.Extensions.Logging;
 
 namespace NatiaGuard.BrainStorm.Main;
 
