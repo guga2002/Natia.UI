@@ -22,6 +22,11 @@ try
     builder.Logging.ClearProviders();
     builder.Host.UseNLog();
 
+    builder.WebHost.UseKestrel(options =>
+    {
+        options.ListenAnyIP(1331); 
+    });
+
     builder.Services.AddHttpClient();
     builder.Services.AddCommonServices();
 
@@ -39,7 +44,7 @@ try
     builder.Services.AddHostedService<Worker>();
 
     var app = builder.Build();
-    logger.Info("Natia.UI application configured successfully. Starting host...");
+    logger.Info("Natia.UI application configured successfully. Starting host on port 1331...");
 
     await app.RunAsync();
 }
